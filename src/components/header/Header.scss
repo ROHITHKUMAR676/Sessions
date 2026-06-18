@@ -1,0 +1,186 @@
+.header-wrapper {
+  width: 100%;
+}
+
+.app-header {
+  height: 48px;
+  background: #161616;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #393939;
+
+  font-family: "IBM Plex Sans", sans-serif;
+}
+
+.menu-section,
+.logo-section,
+.nav-item {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.menu-section {
+  width: 48px;
+  justify-content: center;
+  color: #c6c6c6;
+}
+
+.logo-section {
+  width: 250px;
+  padding-left: 20px;
+  
+
+  color: #f4f4f4;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.search-section {
+  width: 430px;
+  height: 100%;
+  color: #8d8d8d;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 0 16px;
+  border-right: 1px solid #393939;
+}
+
+.search-section svg {
+  color: #8d8d8d;
+}
+
+.search-section input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+
+  color: #f4f4f4;
+  font-size: 14px;
+}
+
+.search-section input::placeholder {
+  color: #8d8d8d;
+  font-size: 14px;
+}
+
+.nav-item {
+  height: 48px;
+  padding: 0 24px;
+
+  
+
+  color: #c6c6c6;
+  font-size: 14px;
+  font-weight: 400;
+
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.nav-item:hover {
+  color: #ffffff;
+}
+
+.campus-item {
+  gap: 8px;
+}
+
+.icons-section {
+  margin-left: auto;
+
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  gap: 24px;
+
+  padding: 0 20px;
+}
+
+.icons-section svg {
+  color: #c6c6c6;
+  cursor: pointer;
+}
+
+.icons-section svg:hover {
+  color: #ffffff;
+}
+
+@media (max-width: 1100px) {
+  .logo-section {
+    width: 210px;
+  }
+
+  .search-section {
+    flex: 1;
+    width: auto;
+    max-width: 360px;
+  }
+
+  .nav-item {
+    padding: 0 14px;
+  }
+
+  .icons-section {
+    gap: 14px;
+    padding: 0 14px;
+  }
+}
+
+@media (max-width: 820px) {
+  .app-header {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .app-header::-webkit-scrollbar {
+    display: none;
+  }
+
+  .logo-section {
+    width: auto;
+    min-width: 188px;
+    padding-right: 14px;
+    padding-left: 10px;
+  }
+
+  .search-section {
+    min-width: 220px;
+  }
+
+  .icons-section {
+    min-width: max-content;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .menu-section {
+    width: 40px;
+    min-width: 40px;
+  }
+
+  .logo-section {
+    min-width: 172px;
+    font-size: 13px;
+  }
+
+  .search-section,
+  .nav-item.campus-item,
+  .nav-item:nth-of-type(3) {
+    display: none;
+  }
+
+  .nav-item {
+    padding: 0 12px;
+    font-size: 13px;
+  }
+
+  .icons-section {
+    gap: 12px;
+  }
+}
