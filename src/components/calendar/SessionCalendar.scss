@@ -213,14 +213,15 @@
 
 .mini-calendar-header {
   display: grid;
-  grid-template-columns: 22px 1fr 22px;
+  grid-template-columns: 32px 1fr 32px;
   align-items: center;
   margin: 18px 0 24px;
 }
 
 .mini-calendar-header span {
+  text-align: center;
   color: #161616;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
 }
 
@@ -262,7 +263,12 @@
 }
 
 .mini-weekday {
-  color: #161616;
+  color: #525252;
+  font-size: 12px;
+  font-weight: 400;
+}
+.outside-mini-month {
+  color: #a8a8a8 !important;
 }
 
 .mini-calendar-days div,
@@ -419,21 +425,36 @@
   font-weight: 600;
   padding: 0;
   cursor: pointer;
-  overflow: hidden;
+  overflow: visible;
   box-shadow: none;
 }
 
 .calendar-event-pill {
-  display: inline-flex;
   max-width: 100%;
   min-height: 16px;
-  align-items: center;
   border-radius: 10px;
   line-height: 16px;
   padding: 0 8px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin: 0;
+}
+
+.calendar-event-pill.cds--tag {
+  display: inline-flex;
+  min-width: 0;
+  width: 100%;
+  height: 16px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.calendar-event-pill .cds--tag__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .full-calendar-surface .fc-event-main {
@@ -442,10 +463,17 @@
 
 .full-calendar-surface .fc-daygrid-event {
   display: block;
-  width: fit-content;
+  width: calc(100% - 14px);
   max-width: calc(100% - 14px);
   margin: 2px 7px;
   white-space: nowrap;
+}
+
+.full-calendar-surface .fc-daygrid-event .fc-event-main,
+.full-calendar-surface .fc-daygrid-event .fc-event-main-frame,
+.full-calendar-surface .fc-daygrid-event .fc-event-title-container {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .full-calendar-surface .fc-daygrid-dot-event {
@@ -472,7 +500,7 @@
 
 .full-calendar-surface .fc-timegrid-event {
   min-height: 16px;
-  width: fit-content;
+  width: calc(100% - 8px);
   max-width: calc(100% - 8px);
   margin-left: 8px;
 }
@@ -564,15 +592,21 @@
   display: grid;
   grid-template-columns: 128px minmax(0, 1fr);
   align-items: center;
+  justify-content: stretch;
   min-height: 28px;
+  width: 100%;
+  max-width: none;
   border: 0;
   background: transparent;
   color: #525252;
-  cursor: pointer;
-  font-family: inherit;
   font-size: 13px;
   text-align: left;
   padding: 0;
+}
+
+.schedule-event-row.cds--btn--ghost:hover,
+.schedule-event-row.cds--btn--ghost:focus {
+  background: transparent;
 }
 
 .schedule-event-row:hover .calendar-event-pill {
@@ -585,7 +619,7 @@
 }
 
 .schedule-event-row .calendar-event-pill {
-  width: fit-content;
+  width: 100%;
   max-width: min(560px, calc(100% - 16px));
 }
 

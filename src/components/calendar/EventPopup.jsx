@@ -1,10 +1,45 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
+  Button,
+  IconButton,
+  OverflowMenu,
+  OverflowMenuItem,
+  Tag,
+  Tile,
+} from "@carbon/react";
+import {
+  Close,
   Copy,
   Launch,
   OverflowMenuVertical,
 } from "@carbon/icons-react";
+import { createPortal } from "react-dom";
 import "./EventPopup.scss";
+
+const getPopupPosition = (anchorElement) => {
+  if (!anchorElement || typeof window === "undefined") {
+    return undefined;
+  }
+
+  const anchorRect = anchorElement.getBoundingClientRect();
+  const popupWidth = 320;
+  const gutter = 12;
+  const popupHeight = 460;
+  const top = Math.max(
+    gutter,
+    Math.min(anchorRect.top, window.innerHeight - popupHeight - gutter)
+  );
+  const availableRight = window.innerWidth - anchorRect.right;
+  const left =
+    availableRight >= popupWidth + gutter
+      ? anchorRect.right + gutter
+      : Math.max(gutter, anchorRect.left - popupWidth - gutter);
+
+  return {
+    top: `${top}px`,
+    left: `${left}px`,
+  };
+};
 
 const formatTimeRange = (event) => {
   const start = event?.start ? new Date(event.start) : null;
@@ -33,8 +68,35 @@ const formatTimeRange = (event) => {
   return `${date} - ${startTime}-${endTime}`;
 };
 
-function EventPopup({ event, onClose, onDelete, onEdit, onJoin }) {
-  const [menuOpen, setMenuOpen] = useState(false);
+function EventPopup({ event, anchorElement, onClose, onDelete, onEdit, onJoin }) {
+  const [popupPosition, setPopupPosition] = useState(() =>
+    getPopupPosition(anchorElement)
+  );
+
+  useEffect(() => {
+    if (!event || !anchorElement) {
+      setPopupPosition(undefined);
+      return undefined;
+    }
+
+    let frameId = 0;
+    const updatePosition = () => {
+      window.cancelAnimationFrame(frameId);
+      frameId = window.requestAnimationFrame(() => {
+        setPopupPosition(getPopupPosition(anchorElement));
+      });
+    };
+
+    updatePosition();
+    window.addEventListener("scroll", updatePosition, true);
+    window.addEventListener("resize", updatePosition);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener("scroll", updatePosition, true);
+      window.removeEventListener("resize", updatePosition);
+    };
+  }, [event, anchorElement]);
 
   if (!event) return null;
 
@@ -45,65 +107,70 @@ function EventPopup({ event, onClose, onDelete, onEdit, onJoin }) {
       ? props.participants
       : ["Saranya Loganathan", "William Christopher"];
 
-  return (
-    <div className="event-popover" role="dialog" aria-label={event.title}>
+  const popup = (
+    <Tile
+      className="event-popover"
+      role="dialog"
+      aria-label={event.title}
+      style={popupPosition}
+    >
       <div className="event-popover-top">
-        <span>{props.sessionType || "Individual Session"}</span>
+        <Tag type="blue" size="sm">
+          {props.sessionType || "Individual Session"}
+        </Tag>
         <div className="event-top-actions">
-          <button
-            type="button"
-            className="event-icon-button"
-            aria-label="Open menu"
-            onClick={() => setMenuOpen((value) => !value)}
+          <OverflowMenu
+            aria-label="Event actions"
+            direction="bottom"
+            flipped
+            iconDescription="Event actions"
+            renderIcon={OverflowMenuVertical}
+            size="sm"
           >
-            <OverflowMenuVertical size={16} />
-          </button>
-          <button
-            type="button"
-            className="event-icon-button"
-            aria-label="Close"
+            <OverflowMenuItem
+              itemText="Edit"
+              onClick={() => onEdit?.(eventId)}
+            />
+            <OverflowMenuItem
+              hasDivider
+              isDelete
+              itemText="Delete app"
+              onClick={() => onDelete?.(eventId)}
+            />
+          </OverflowMenu>
+
+          <IconButton
+            kind="ghost"
+            label="Close"
+            size="sm"
             onClick={onClose}
           >
-            x
-          </button>
+            <Close />
+          </IconButton>
         </div>
-        {menuOpen && (
-          <div className="event-menu">
-            <button
-              type="button"
-              onClick={() => {
-                setMenuOpen(false);
-                onEdit?.(eventId);
-              }}
-            >
-              Edit
-            </button>
-            <button
-              type="button"
-              className="danger"
-              onClick={() => onDelete?.(eventId)}
-            >
-              Delete app
-            </button>
-          </div>
-        )}
       </div>
 
       <h3>{props.description || event.title}</h3>
       <p className="event-date">{formatTimeRange(event)}</p>
 
       <div className="event-actions-row">
-        <button
-          type="button"
+        <Button
+          kind="primary"
           className="join-meeting-button"
+          renderIcon={Launch}
+          size="md"
           onClick={onJoin}
         >
           Join Meeting
-          <Launch size={14} />
-        </button>
-        <button type="button" className="copy-button" aria-label="Copy meeting link">
-          <Copy size={16} />
-        </button>
+        </Button>
+        <IconButton
+          kind="ghost"
+          className="copy-button"
+          label="Copy meeting link"
+          size="md"
+        >
+          <Copy />
+        </IconButton>
       </div>
 
       <div className="participants-block">
@@ -120,8 +187,14 @@ function EventPopup({ event, onClose, onDelete, onEdit, onJoin }) {
           </div>
         ))}
       </div>
-    </div>
+    </Tile>
   );
+
+  if (typeof document === "undefined") {
+    return popup;
+  }
+
+  return createPortal(popup, document.body);
 }
 
 export default EventPopup;

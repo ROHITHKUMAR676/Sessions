@@ -3,6 +3,21 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 import interactionPlugin from "@fullcalendar/interaction";
+import { Button, Tag } from "@carbon/react";
+
+const getEventTagType = (event) => {
+  const sessionType = event.extendedProps?.sessionType;
+
+  if (sessionType === "Workshop" || sessionType === "Group Session") {
+    return "purple";
+  }
+
+  if (sessionType === "Staff Training") {
+    return "green";
+  }
+
+  return event.textColor === "#393939" ? "gray" : "blue";
+};
 
 function FullCalendarView({
   calendarRef,
@@ -122,7 +137,9 @@ function FullCalendarView({
           month: "short",
         }}
         eventContent={(info) => (
-          <span
+          <Tag
+            size="sm"
+            type={getEventTagType(info.event)}
             className="calendar-event-pill"
             style={{
               backgroundColor: info.event.backgroundColor,
@@ -130,10 +147,10 @@ function FullCalendarView({
             }}
           >
             {info.event.title}
-          </span>
+          </Tag>
         )}
         eventClick={(info) => {
-          onEventClick(info.event);
+          onEventClick(info.event, info.el);
         }}
       />
 
@@ -150,14 +167,19 @@ function FullCalendarView({
 
               <div className="schedule-events-cell">
                 {group.events.map((event) => (
-                  <button
+                  <Button
+                    kind="ghost"
                     className="schedule-event-row"
                     key={event.id}
-                    type="button"
-                    onClick={() => onEventClick(event)}
+                    size="sm"
+                    onClick={(clickEvent) =>
+                      onEventClick(event, clickEvent.currentTarget)
+                    }
                   >
                     <span className="schedule-event-time">{formatScheduleTime(event)}</span>
-                    <span
+                    <Tag
+                      size="sm"
+                      type={getEventTagType(event)}
                       className="calendar-event-pill"
                       style={{
                         backgroundColor: event.backgroundColor,
@@ -165,8 +187,8 @@ function FullCalendarView({
                       }}
                     >
                       {event.title}
-                    </span>
-                  </button>
+                    </Tag>
+                  </Button>
                 ))}
               </div>
             </div>

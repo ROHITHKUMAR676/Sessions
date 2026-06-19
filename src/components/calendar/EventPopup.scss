@@ -1,94 +1,42 @@
 .event-popover {
-  position: fixed;
+  position: fixed !important;
   top: 50%;
-  left: 54%;
+  left: 50%;
   z-index: 1200;
   width: 320px;
+  max-width: calc(100vw - 24px);
   min-height: 292px;
   padding: 22px 24px 26px;
   background: #ffffff;
   box-shadow: 0 3px 9px rgba(0, 0, 0, 0.16);
   color: #161616;
   font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+  transform: none;
 }
 
 .event-popover-top {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
 }
 
-.event-popover-top > span {
-  display: inline-flex;
-  align-items: center;
-  min-height: 20px;
-  padding: 0 9px;
-  border-radius: 10px;
-  background: #d0e2ff;
-  color: #0f62fe;
-  font-size: 12px;
+.event-popover-top .cds--tag {
+  margin: 0;
 }
 
 .event-top-actions {
   display: flex;
-  gap: 14px;
-}
-
-.event-icon-button,
-.copy-button {
-  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  border: 0;
-  background: transparent;
-  color: #161616;
-  cursor: pointer;
+  gap: 6px;
 }
 
-.event-icon-button {
+.event-top-actions .cds--btn--icon-only,
+.event-top-actions .cds--overflow-menu {
   width: 28px;
+  min-height: 28px;
   height: 28px;
   color: #161616;
-  font-size: 18px;
-  line-height: 1;
-}
-
-.event-icon-button svg {
-  width: 20px;
-  height: 20px;
-}
-
-.event-menu {
-  position: absolute;
-  top: 25px;
-  right: 22px;
-  z-index: 5;
-  width: 116px;
-  display: flex;
-  flex-direction: column;
-  padding: 8px 0;
-  background: #ffffff;
-  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2);
-}
-
-.event-menu button {
-  width: 100%;
-  height: 34px;
-  border: 0;
-  background: #ffffff;
-  color: #0f62fe;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 13px;
-  text-align: left;
-  padding: 0 16px;
-}
-
-.event-menu .danger {
-  background: #da1e28;
-  color: #ffffff;
 }
 
 .event-popover h3 {
@@ -107,28 +55,22 @@
 
 .event-actions-row {
   display: grid;
-  grid-template-columns: 1fr 34px;
+  grid-template-columns: 1fr 40px;
   align-items: center;
   gap: 14px;
   margin: 30px 0 22px;
 }
 
-.join-meeting-button {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.join-meeting-button.cds--btn {
   height: 40px;
-  border: 0;
-  background: #0f62fe;
-  color: #ffffff;
-  cursor: pointer;
-  font-family: inherit;
+  min-height: 40px;
+  max-width: none;
   font-size: 13px;
-  padding: 0 16px;
 }
 
-.copy-button {
-  height: 34px;
+.copy-button.cds--btn--icon-only {
+  width: 40px;
+  min-height: 40px;
   color: #6f6f6f;
 }
 
@@ -201,10 +143,6 @@
   .event-actions-row {
     grid-template-columns: 1fr;
     gap: 8px;
-  }
-
-  .copy-button {
-    justify-content: flex-start;
   }
 
   .participant-row {

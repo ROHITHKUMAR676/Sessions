@@ -1,10 +1,21 @@
-import { ArrowLeft, ChevronLeft, ChevronRight } from "@carbon/icons-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  CollapseStripe,
+} from "@carbon/icons-react";
+
+import {
+  Checkbox,
+  IconButton,
+} from "@carbon/react";
+
 import { useMemo, useState } from "react";
 
-const monthFormatter = new Intl.DateTimeFormat("en-US", {
-  month: "long",
-  year: "numeric",
-});
+const monthFormatter =
+  new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    year: "numeric",
+  });
 
 function MiniCalendar({
   calendarRef,
@@ -13,10 +24,24 @@ function MiniCalendar({
   onFiltersChange,
   onNavigate,
 }) {
-  const [displayDate, setDisplayDate] = useState(new Date(2026, 5, 1));
-  const [selectedDate, setSelectedDate] = useState(new Date(2026, 5, 13));
+  const today = new Date();
 
-  const updateFilter = (field, checked) => {
+  const [displayDate, setDisplayDate] =
+    useState(
+      new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        1
+      )
+    );
+
+  const [selectedDate, setSelectedDate] =
+    useState(today);
+
+  const updateFilter = (
+    field,
+    checked
+  ) => {
     onFiltersChange((current) => ({
       ...current,
       [field]: checked,
@@ -24,97 +49,280 @@ function MiniCalendar({
   };
 
   const calendarDays = useMemo(() => {
-    const year = displayDate.getFullYear();
-    const month = displayDate.getMonth();
-    const firstOfMonth = new Date(year, month, 1);
-    const start = new Date(year, month, 1 - firstOfMonth.getDay());
+    const year =
+      displayDate.getFullYear();
 
-    return Array.from({ length: 42 }, (_, index) => {
-      const date = new Date(start);
-      date.setDate(start.getDate() + index);
+    const month =
+      displayDate.getMonth();
 
-      return date;
-    });
+    const firstOfMonth =
+      new Date(year, month, 1);
+
+    const start =
+      new Date(
+        year,
+        month,
+        1 - firstOfMonth.getDay()
+      );
+
+    return Array.from(
+      { length: 42 },
+      (_, index) => {
+        const date =
+          new Date(start);
+
+        date.setDate(
+          start.getDate() + index
+        );
+
+        return date;
+      }
+    );
   }, [displayDate]);
 
-  const moveDisplayMonth = (offset) => {
-    setDisplayDate((current) => new Date(current.getFullYear(), current.getMonth() + offset, 1));
+  const moveDisplayMonth = (
+    offset
+  ) => {
+    setDisplayDate(
+      (current) =>
+        new Date(
+          current.getFullYear(),
+          current.getMonth() +
+            offset,
+          1
+        )
+    );
   };
 
   const selectDate = (date) => {
-    const calendarApi = calendarRef.current?.getApi();
-
     setSelectedDate(date);
-    setDisplayDate(new Date(date.getFullYear(), date.getMonth(), 1));
+
+    setDisplayDate(
+      new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        1
+      )
+    );
+
+    const calendarApi =
+      calendarRef.current?.getApi();
 
     if (calendarApi) {
       calendarApi.gotoDate(date);
+
       onNavigate?.();
     }
   };
 
-  const isSameDate = (left, right) =>
-    left.getFullYear() === right.getFullYear() &&
-    left.getMonth() === right.getMonth() &&
-    left.getDate() === right.getDate();
+  const isSameDate = (
+    left,
+    right
+  ) =>
+    left.getFullYear() ===
+      right.getFullYear() &&
+    left.getMonth() ===
+      right.getMonth() &&
+    left.getDate() ===
+      right.getDate();
 
   return (
-    <div className="mini-calendar">
-      <div className="mini-calendar-topbar">
-        <button type="button" aria-label="Close mini calendar" onClick={onClose}>
-          <ArrowLeft size={14} />
-        </button>
-      </div>
+    <div
+      style={{
+        padding: "0 22px 24px",
+      }}
+    >
+      {/* Top Bar */}
+      <div
+  style={{
+    display: "flex",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    height: "52px",
+    borderBottom: "1px solid #e0e0e0",
+    margin: "0 -22px 0 -22px",
+  }}
+>
+  <IconButton
+    kind="ghost"
+    size="sm"
+    label="Close"
+    onClick={onClose}
+    style={{
+      marginTop: "4px",
+    }}
+  >
+    <CollapseStripe size={16} />
+  </IconButton>
+</div>
 
-      <div className="mini-calendar-header">
-        <button type="button" aria-label="Previous month" onClick={() => moveDisplayMonth(-1)}>
+      {/* Month Header */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns:
+            "32px 1fr 32px",
+          alignItems: "center",
+          margin:
+            "18px 0 24px",
+        }}
+      >
+        <IconButton
+          kind="ghost"
+          size="sm"
+          label="Previous Month"
+          onClick={() =>
+            moveDisplayMonth(-1)
+          }
+        >
           <ChevronLeft size={14} />
-        </button>
-        <span>{monthFormatter.format(displayDate)}</span>
-        <button type="button" aria-label="Next month" onClick={() => moveDisplayMonth(1)}>
+        </IconButton>
+
+        <span
+          style={{
+            textAlign: "center",
+            fontSize: "13px",
+            fontWeight: 600,
+            color: "#161616",
+          }}
+        >
+          {monthFormatter.format(
+            displayDate
+          )}
+        </span>
+
+        <IconButton
+          kind="ghost"
+          size="sm"
+          label="Next Month"
+          onClick={() =>
+            moveDisplayMonth(1)
+          }
+        >
           <ChevronRight size={14} />
-        </button>
+        </IconButton>
       </div>
 
-      <div className="mini-calendar-days">
-        {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
-          <div className="mini-weekday" key={`${day}-${index}`}>{day}</div>
-        ))}
-
-        {calendarDays.map((date) => (
-          <button
-            className={isSameDate(date, selectedDate) ? "selected-mini-day" : ""}
-            key={date.toISOString()}
-            type="button"
-            onClick={() => selectDate(date)}
+      {/* Weekdays + Dates */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns:
+            "repeat(7, 1fr)",
+          gap: "16px 13px",
+          textAlign: "center",
+          marginBottom: "30px",
+        }}
+      >
+        {[
+          "S",
+          "M",
+          "T",
+          "W",
+          "T",
+          "F",
+          "S",
+        ].map((day, index) => (
+          <div
+            key={`${day}-${index}`}
+            style={{
+              fontSize: "12px",
+              color: "#525252",
+            }}
           >
-            {date.getDate()}
-          </button>
+            {day}
+          </div>
         ))}
+
+        {calendarDays.map((date) => {
+          const isSelected =
+            isSameDate(
+              date,
+              selectedDate
+            );
+
+          const isCurrentMonth =
+            date.getMonth() ===
+            displayDate.getMonth();
+
+          return (
+            <button
+              key={date.toISOString()}
+              type="button"
+              onClick={() =>
+                selectDate(date)
+              }
+              style={{
+                border: "none",
+                background:
+                  "transparent",
+                cursor: "pointer",
+
+                fontSize: "14px",
+
+                color:
+                  !isCurrentMonth
+                    ? "#a8a8a8"
+                    : isSelected
+                    ? "#0f62fe"
+                    : "#525252",
+
+                fontWeight:
+                  isSelected
+                    ? 600
+                    : 400,
+
+                padding: 0,
+              }}
+            >
+              {date.getDate()}
+            </button>
+          );
+        })}
       </div>
 
-      <div className="mini-calendar-filters">
-        <label>
-          <input
-            type="checkbox"
-            checked={filters.mySessions}
-            onChange={(event) =>
-              updateFilter("mySessions", event.target.checked)
-            }
-          />
-          My Sessions
-        </label>
+      {/* Filters */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection:
+            "column",
+          gap: "12px",
+        }}
+      >
+        <Checkbox
+          id="mini-my-sessions"
+          labelText="My Sessions"
+          checked={
+            filters.mySessions
+          }
+          onChange={(
+            _,
+            { checked }
+          ) =>
+            updateFilter(
+              "mySessions",
+              checked
+            )
+          }
+        />
 
-        <label>
-          <input
-            type="checkbox"
-            checked={filters.teamSessions}
-            onChange={(event) =>
-              updateFilter("teamSessions", event.target.checked)
-            }
-          />
-          Team Sessions
-        </label>
+        <Checkbox
+          id="mini-team-sessions"
+          labelText="Team Sessions"
+          checked={
+            filters.teamSessions
+          }
+          onChange={(
+            _,
+            { checked }
+          ) =>
+            updateFilter(
+              "teamSessions",
+              checked
+            )
+          }
+        />
       </div>
     </div>
   );

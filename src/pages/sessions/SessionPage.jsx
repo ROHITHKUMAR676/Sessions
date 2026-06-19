@@ -15,6 +15,8 @@ import {
 function SessionPage() {
   const [selectedEvent, setSelectedEvent] =
     useState(null);
+  const [selectedEventAnchorElement, setSelectedEventAnchorElement] =
+    useState(null);
   const [drawerOpen, setDrawerOpen] =
   useState(false);
   const [editingSession, setEditingSession] =
@@ -250,7 +252,10 @@ function SessionPage() {
     {activeTab === "calendar" && (
   <SessionCalendar
     sessions={sessions}
-    onEventClick={setSelectedEvent}
+    onEventClick={(event, anchorElement) => {
+      setSelectedEvent(event);
+      setSelectedEventAnchorElement(anchorElement);
+    }}
   />
 )}
 
@@ -308,14 +313,17 @@ function SessionPage() {
         )}
       <EventPopup
         event={selectedEvent}
-        onClose={() =>
-          setSelectedEvent(null)
-        }
+        anchorElement={selectedEventAnchorElement}
+        onClose={() => {
+          setSelectedEvent(null);
+          setSelectedEventAnchorElement(null);
+        }}
         onDelete={(id) => {
           setSessions((prev) =>
             prev.filter((session) => String(session.id) !== String(id))
           );
           setSelectedEvent(null);
+          setSelectedEventAnchorElement(null);
         }}
         onEdit={(id) => {
           const session = sessions.find(
@@ -324,6 +332,7 @@ function SessionPage() {
           if (session) {
             setEditingSession(session);
             setSelectedEvent(null);
+            setSelectedEventAnchorElement(null);
             setDrawerOpen(true);
           }
         }}
@@ -332,6 +341,7 @@ function SessionPage() {
             (item) => String(item.id) === String(selectedEvent.id)
           ) || sessions[0]);
           setSelectedEvent(null);
+          setSelectedEventAnchorElement(null);
         }}
       />
     </>
