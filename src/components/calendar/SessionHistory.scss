@@ -267,7 +267,6 @@
   }
 }
 
-// Status with dot
 .sh-status {
   display: inline-flex;
   align-items: center;
@@ -275,12 +274,29 @@
   font-size: 0.8125rem;
 }
 
-.status-dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+.sh-status-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+}
+
+.sh-status-icon--completed {
+  width: 12px;
+  height: 12px;
+  fill: #24a148;
+}
+
+.sh-status-icon--pending {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #6f6f6f;
+  color: #ffffff;
+
+  svg {
+    fill: currentColor;
+  }
 }
 
 // Actions cell – tighter
@@ -312,34 +328,37 @@
 }
 
 .sh-drawer {
-  width: 360px;
+  width: 368px;
   height: 100vh;
   background: #ffffff;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.16);
+  border-left: 1px solid #c6c6c6;
+  box-shadow: none;
 }
 
 .sh-drawer-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 16px;
+  min-height: 64px;
+  padding: 16px 16px 10px;
   border-bottom: 1px solid #e0e0e0;
 }
 
 .sh-drawer-title {
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 22px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18px;
   color: #161616;
 }
 
 .sh-drawer-subtitle {
-  margin-top: 8px;
-  font-size: 12px;
+  margin-top: 4px;
+  font-size: 11px;
   color: #6f6f6f;
+  text-transform: uppercase;
 }
 
 .sh-drawer-close {
@@ -348,10 +367,14 @@
   cursor: pointer;
   color: #6f6f6f;
   font-size: 18px;
+  line-height: 1;
+  padding: 0;
 }
 
 .sh-section {
-  padding: 16px;
+  padding: 16px 18px 18px;
+  background: #d0e2ff;
+  border-bottom: 1px solid #a6c8ff;
 }
 
 .sh-section-title-row {
@@ -362,7 +385,7 @@
 }
 
 .sh-section-title-row span:first-child {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #161616;
 }
@@ -379,23 +402,30 @@
 }
 
 .sh-section-content {
-  font-size: 14px;
-  line-height: 22px;
-  color: #393939;
+  font-size: 12px;
+  line-height: 17px;
+  color: #161616;
 }
 
 .sh-guide-section {
   background: #f4f4f4;
-  padding: 16px;
+  padding: 0 18px 16px;
   border-top: 1px solid #e0e0e0;
   border-bottom: 1px solid #e0e0e0;
 }
 
 .sh-guide-title {
-  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 42px;
+  margin: 0 -18px 12px;
+  padding: 0 18px;
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 13px;
   font-weight: 600;
   color: #161616;
-  margin-bottom: 12px;
 }
 
 .sh-guide-section ul {
@@ -411,20 +441,30 @@
 }
 
 .sh-overview-section {
-  padding: 16px;
+  padding: 18px;
 }
 
 .sh-overview-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  margin-bottom: 12px;
+  margin-bottom: 18px;
 }
 
 .sh-overview-row {
   display: flex;
   justify-content: space-between;
+  gap: 16px;
   margin-bottom: 10px;
   font-size: 12px;
+}
+
+.sh-overview-row span:first-child {
+  color: #525252;
+}
+
+.sh-overview-row span:last-child {
+  color: #6f6f6f;
+  text-align: right;
 }
 
 .submitted-status {
@@ -434,11 +474,14 @@
 
 .sh-drawer-footer {
   margin-top: auto;
-  padding: 16px;
+  padding: 0 18px 18px;
 }
 
 .sh-drawer-footer .cds--btn {
   width: 100%;
+  max-width: none;
+  min-height: 48px;
+  justify-content: space-between;
 }
 
 .sh-notes-link {
@@ -448,7 +491,7 @@
   color: #0f62fe;
   cursor: pointer;
   padding: 0;
-  font-size: 14px;
+  font-size: 12px;
 }
 @media (max-width: 900px) {
   .sh-toolbar {

@@ -27,20 +27,31 @@
 
 .ep-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   padding: 0.75rem 0.75rem 0.5rem;
   border-bottom: none;
+  gap: 0.5rem;
 }
 
-.ep-session-tag {
+.ep-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.ep-session-tag,
+.ep-internal-tag {
   font-size: 0.75rem;
+  margin: 0;
 }
 
 .ep-header-actions {
   display: flex;
   align-items: center;
   gap: 0;
+  flex-shrink: 0;
 
   // Ghost icon buttons
   .cds--btn--ghost,

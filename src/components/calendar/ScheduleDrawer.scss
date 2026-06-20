@@ -172,12 +172,43 @@
   margin-bottom: 17px;
 }
 
-.schedule-form .cds--tag {
-  min-height: 16px;
-  margin: -8px 0 0 12px;
+.schedule-tag-suggestions,
+.schedule-selected-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.schedule-tag-suggestions {
+  margin: -8px 0 8px;
+}
+
+.schedule-tag-suggestions button {
+  min-height: 24px;
+  border: 1px solid #c6c6c6;
+  background: #ffffff;
+  color: #525252;
+  cursor: pointer;
+  padding: 0 8px;
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.schedule-tag-suggestions button:hover {
+  border-color: #8d8d8d;
+  color: #161616;
+}
+
+.schedule-selected-tags {
+  margin-top: 0;
+}
+
+.schedule-selected-tags .cds--tag {
+  min-height: 18px;
+  margin: 0;
   padding: 0 7px;
   font-size: 10px;
-  line-height: 16px;
+  line-height: 18px;
 }
 
 .schedule-drawer-footer {

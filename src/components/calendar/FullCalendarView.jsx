@@ -115,8 +115,20 @@ function FullCalendarView({
   height="690px"
 
   dateClick={(info) => {
+    const rect = info.dayEl?.getBoundingClientRect();
+
     onSlotClick?.({
       start: info.dateStr,
+      anchorRect: rect
+        ? {
+            top: rect.top,
+            left: rect.left,
+            width: rect.width,
+            height: rect.height,
+          }
+        : null,
+      clientX: info.jsEvent?.clientX,
+      clientY: info.jsEvent?.clientY,
     });
   }}
 

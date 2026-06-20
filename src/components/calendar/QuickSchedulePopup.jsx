@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
   TextInput,
@@ -9,13 +9,45 @@ import {
   DatePicker,
   DatePickerInput,
   TimePicker,
-  Tabs,
-  TabList,
-  Tab,
 } from "@carbon/react";
 import { Close } from "@carbon/icons-react";
 
 import "./QuickSchedulePopup.scss";
+
+const getPopupPosition = (selectedSlot) => {
+  if (typeof window === "undefined") return {};
+
+  const popupWidth = 282;
+  const popupHeight = 548;
+  const gutter = 16;
+  const anchor = selectedSlot?.anchorRect;
+  const fallbackLeft =
+    typeof selectedSlot?.clientX === "number"
+      ? selectedSlot.clientX
+      : window.innerWidth / 2;
+  const fallbackTop =
+    typeof selectedSlot?.clientY === "number"
+      ? selectedSlot.clientY
+      : window.innerHeight / 2;
+
+  const preferredLeft = anchor
+    ? anchor.left + anchor.width / 2 - popupWidth / 2
+    : fallbackLeft - popupWidth / 2;
+  const preferredTop = anchor
+    ? anchor.top + Math.min(28, anchor.height / 3)
+    : fallbackTop - 120;
+
+  return {
+    left: `${Math.min(
+      Math.max(gutter, preferredLeft),
+      window.innerWidth - popupWidth - gutter
+    )}px`,
+    top: `${Math.min(
+      Math.max(gutter, preferredTop),
+      window.innerHeight - popupHeight - gutter
+    )}px`,
+  };
+};
 
 function QuickSchedulePopup({ open, selectedSlot, onClose, onSave }) {
   const initialDate = selectedSlot?.start?.split("T")[0] || "";
@@ -29,7 +61,17 @@ function QuickSchedulePopup({ open, selectedSlot, onClose, onSave }) {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
 
+  useEffect(() => {
+    if (open) {
+      setEventDate(initialDate);
+    }
+  }, [initialDate, open]);
+
   if (!open) return null;
+
+  const selectedDate = eventDate
+    ? new Date(`${eventDate}T00:00:00`)
+    : undefined;
 
   const category = activeTab === 1 ? "Workshop" : "Session";
   const eventColors =
@@ -51,24 +93,40 @@ function QuickSchedulePopup({ open, selectedSlot, onClose, onSave }) {
         sessionType,
         participants: [participant],
         description: notes,
+        tags: ["Mental Health"],
       },
     });
   };
 
   return (
-    <div className="quick-popup-overlay">
-      <div className="quick-popup">
+    <div className="quick-popup-overlay" onClick={onClose}>
+      <div
+        className="quick-popup"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Quick schedule"
+        style={getPopupPosition(selectedSlot)}
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className="quick-popup-header">
-          <Tabs
-            className="quick-tabs"
-            selectedIndex={activeTab}
-            onChange={({ selectedIndex }) => setActiveTab(selectedIndex)}
-          >
-            <TabList aria-label="Session type">
-              <Tab>Session</Tab>
-              <Tab>Workshop</Tab>
-            </TabList>
-          </Tabs>
+          <div className="quick-tabs" role="tablist" aria-label="Session type">
+            {["Session", "Workshop"].map((label, index) => (
+              <Button
+                key={label}
+                kind="ghost"
+                size="sm"
+                type="button"
+                role="tab"
+                aria-selected={activeTab === index}
+                className={`quick-tab-button ${
+                  activeTab === index ? "quick-tab-button--active" : ""
+                }`}
+                onClick={() => setActiveTab(index)}
+              >
+                {label}
+              </Button>
+            ))}
+          </div>
 
           <IconButton
             kind="ghost"
@@ -96,7 +154,7 @@ function QuickSchedulePopup({ open, selectedSlot, onClose, onSave }) {
               <DatePicker
                 datePickerType="single"
                 dateFormat="m/d/Y"
-                value={eventDate}
+                value={selectedDate}
                 onChange={(dates) => {
                   if (dates?.[0]) {
                     const iso = dates[0].toISOString().split("T")[0];

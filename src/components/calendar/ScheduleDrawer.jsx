@@ -32,6 +32,14 @@ const participantOptions = [
   "STD 6th",
 ];
 
+const tagOptions = [
+  "Mental Health",
+  "Academic",
+  "Follow Up",
+  "Risk Review",
+  "Wellbeing",
+];
+
 const emptyForm = {
   title: "",
   date: "",
@@ -98,7 +106,7 @@ const getInitialForm = (session) => {
     participant: props.participants?.[0] || "",
     mode: props.mode || "Online",
     description: props.description || "",
-    tag: props.tags?.[0] || "Mental Health",
+    tag: props.tags?.join(", ") || "Mental Health",
   };
 };
 
@@ -117,6 +125,10 @@ function ScheduleDrawer({ open, onClose, onSave, session }) {
     const startTime = form.startTime || "09:00";
     const endTime = form.endTime || "10:00";
     const eventColors = getEventColors(form.sessionType);
+    const tags = form.tag
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter(Boolean);
 
     onSave({
       id: session?.id || Date.now(),
@@ -137,7 +149,7 @@ function ScheduleDrawer({ open, onClose, onSave, session }) {
         ],
         mode: form.mode || "Online",
         description: form.description || form.title,
-        tags: [form.tag || "Mental Health"],
+        tags: tags.length > 0 ? tags : ["Mental Health"],
         meetingLink: "#join-session",
       },
     });
@@ -295,7 +307,29 @@ function ScheduleDrawer({ open, onClose, onSave, session }) {
             />
           </div>
 
-          <Tag type="blue">{form.tag || "Mental Health"}</Tag>
+          <div className="schedule-tag-suggestions" aria-label="Tag suggestions">
+            {tagOptions.map((tag) => (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => updateField("tag", tag)}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+
+          <div className="schedule-selected-tags">
+            {(form.tag || "Mental Health")
+              .split(",")
+              .map((tag) => tag.trim())
+              .filter(Boolean)
+              .map((tag) => (
+                <Tag key={tag} type="blue">
+                  {tag}
+                </Tag>
+              ))}
+          </div>
         </div>
 
         <footer className="schedule-drawer-footer">

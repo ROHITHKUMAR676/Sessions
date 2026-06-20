@@ -126,6 +126,7 @@ function EventPopup({ event, anchorElement, onClose, onDelete, onEdit, onJoin })
   const props = event.extendedProps || {};
   const eventId = event.id || event._def?.publicId;
   const sessionType = props.sessionType || "Individual Session";
+  const tags = props.tags?.length > 0 ? props.tags : ["Mental Health"];
 
   const participants =
     props.participants?.length > 0
@@ -158,9 +159,16 @@ function EventPopup({ event, anchorElement, onClose, onDelete, onEdit, onJoin })
       >
         {/* ── Header row ── */}
         <div className="ep-header">
-          <Tag type={tagType} size="sm" className="ep-session-tag">
-            {sessionType}
-          </Tag>
+          <div className="ep-tags">
+            <Tag type={tagType} size="sm" className="ep-session-tag">
+              {sessionType}
+            </Tag>
+            {tags.slice(0, 2).map((tag) => (
+              <Tag key={tag} type="gray" size="sm" className="ep-internal-tag">
+                {tag}
+              </Tag>
+            ))}
+          </div>
 
           <div className="ep-header-actions">
             <OverflowMenu

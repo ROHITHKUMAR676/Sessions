@@ -25,6 +25,9 @@ import {
   Download,
   Launch,
   Bookmark,
+  CheckmarkFilled,
+  OverflowMenuHorizontal,
+  ChevronDown,
 } from "@carbon/icons-react";
 
 import "./SessionHistory.scss";
@@ -41,13 +44,15 @@ const headers = [
   { key: "actions", header: "" },
 ];
 
-function StatusDot({ color }) {
+function StatusIcon({ status }) {
+  if (status === "completed") {
+    return <CheckmarkFilled className="sh-status-icon sh-status-icon--completed" />;
+  }
+
   return (
-    <span
-      className="status-dot"
-      style={{ background: color }}
-      aria-hidden="true"
-    />
+    <span className="sh-status-icon sh-status-icon--pending" aria-hidden="true">
+      <OverflowMenuHorizontal size={12} />
+    </span>
   );
 }
 
@@ -260,7 +265,7 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
                           return (
                             <TableCell key={cell.id}>
                               <span className="sh-status sh-status--completed">
-                                <StatusDot color="#24a148" />
+                                <StatusIcon status="completed" />
                                 Completed
                               </span>
                             </TableCell>
@@ -272,7 +277,7 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
                           return (
                             <TableCell key={cell.id}>
                               <span className="sh-status sh-status--pending">
-                                <StatusDot color="#8d8d8d" />
+                                <StatusIcon status="pending" />
                                 Pending
                               </span>
                             </TableCell>
@@ -375,7 +380,8 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
 
       <div className="sh-guide-section">
         <div className="sh-guide-title">
-          Facilitator Guide
+          <ChevronDown size={16} />
+          <span>Facilitator guide</span>
         </div>
 
         <ul>

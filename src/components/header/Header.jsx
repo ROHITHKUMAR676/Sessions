@@ -5,8 +5,12 @@ import {
   Search,
   Help,
   Launch,
+  Terminal,
   UserMultiple,
   Calendar,
+  UserFeedback,
+  User,
+  Calculator,
   Notification,
   UserAvatar,
   ChevronDown,
@@ -48,11 +52,11 @@ function AppHeader() {
 
         <div className="icons-section">
           <Help size={18} />
-          <Launch size={18} />
-          <UserMultiple size={18} />
-          <Calendar size={18} />
+          <Terminal size={18} />
+          <UserFeedback size={18} />
+          <Calculator size={18} />
           <Notification size={18} />
-          <UserAvatar size={18} />
+          <User size={18} />
         </div>
 
       </header>
