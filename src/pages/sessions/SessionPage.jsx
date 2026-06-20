@@ -12,7 +12,12 @@ import {
   Add,
   Attachment,
 } from "@carbon/icons-react";
-
+import {
+  Button,
+  Tabs,
+  TabList,
+  Tab,
+} from "@carbon/react";
 function SessionPage() {
   const [selectedEvent, setSelectedEvent] =
     useState(null);
@@ -238,21 +243,22 @@ function SessionPage() {
         </div>
 
         {/* Tabs */}
-        <div className="session-tabs">
-          <div
-  onClick={() => setActiveTab("calendar")}
-  className={`session-tab ${activeTab === "calendar" ? "active" : ""}`}
+        <Tabs
+  selectedIndex={activeTab === "calendar" ? 0 : 1}
+  onChange={({ selectedIndex }) =>
+    setActiveTab(
+      selectedIndex === 0
+        ? "calendar"
+        : "history"
+    )
+  }
+  className="session-tabs"
 >
-  Session Calendar
-</div>
-
-          <div
-  onClick={() => setActiveTab("history")}
-  className={`session-tab ${activeTab === "history" ? "active" : ""}`}
->
-  Session History
-</div>
-        </div>
+  <TabList aria-label="Session Navigation">
+    <Tab>Session Calendar</Tab>
+    <Tab>Session History</Tab>
+  </TabList>
+</Tabs>
 
     {activeTab === "calendar" && (
  <SessionCalendar

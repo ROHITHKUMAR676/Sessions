@@ -307,17 +307,21 @@ function ScheduleDrawer({ open, onClose, onSave, session }) {
             />
           </div>
 
-          <div className="schedule-tag-suggestions" aria-label="Tag suggestions">
-            {tagOptions.map((tag) => (
-              <button
-                key={tag}
-                type="button"
-                onClick={() => updateField("tag", tag)}
-              >
-                {tag}
-              </button>
-            ))}
-          </div>
+          <div
+  className="schedule-tag-suggestions"
+  aria-label="Tag suggestions"
+>
+  {tagOptions.map((tag) => (
+    <Button
+      key={tag}
+      kind="ghost"
+      size="sm"
+      onClick={() => updateField("tag", tag)}
+    >
+      {tag}
+    </Button>
+  ))}
+</div>
 
           <div className="schedule-selected-tags">
             {(form.tag || "Mental Health")

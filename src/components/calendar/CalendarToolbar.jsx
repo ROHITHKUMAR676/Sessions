@@ -1,8 +1,14 @@
 import {
+  Button,
+  IconButton,
   Search,
+  Select,
+  SelectItem,
+} from "@carbon/react";
+
+import {
   Printer,
   Share,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
 } from "@carbon/icons-react";
@@ -51,64 +57,55 @@ function CalendarToolbar({
       <div className="toolbar-left">
         <span>{title}</span>
 
-        <button type="button" onClick={goPrev} aria-label="Previous">
+        <IconButton kind="ghost" size="sm" label="Previous" onClick={goPrev}>
           <ChevronLeft size={16} />
-        </button>
+        </IconButton>
 
-        <button type="button" onClick={goNext} aria-label="Next">
+        <IconButton kind="ghost" size="sm" label="Next" onClick={goNext}>
           <ChevronRight size={16} />
-        </button>
+        </IconButton>
 
-        <button
+        <Button
+          kind="secondary"
+          size="lg"
           className="today-btn"
           onClick={goToday}
         >
           Today
-        </button>
+        </Button>
 
-        <label className="calendar-search-field">
-          <Search size={16} />
-          <input
-            type="search"
-            value={query}
-            onChange={(event) => onQueryChange(event.target.value)}
-            placeholder="Search"
-            aria-label="Search sessions"
-          />
-        </label>
+        <Search
+          id="calendar-search"
+          size="lg"
+          labelText="Search sessions"
+          value={query}
+          onChange={(event) => onQueryChange(event.target.value)}
+          placeholder="Search"
+          className="calendar-search-field"
+        />
       </div>
 
       <div className="toolbar-right">
-        <button type="button" aria-label="Print calendar" onClick={printCalendar}>
+        <IconButton kind="ghost" size="lg" label="Print calendar" onClick={printCalendar}>
           <Printer size={16} />
-        </button>
-        <Share size={16} />
+        </IconButton>
+        <IconButton kind="ghost" size="lg" label="Share calendar">
+          <Share size={16} />
+        </IconButton>
 
-        <label className="calendar-view-select">
-          <select
-            value={currentView}
-            onChange={(e) =>
-              changeView(e.target.value)
-            }
-          >
-            <option value="dayGridMonth">
-              Month
-            </option>
-
-            <option value="timeGridWeek">
-              Week
-            </option>
-
-            <option value="timeGridDay">
-              Day
-            </option>
-
-            <option value="listWeek">
-              Schedules
-            </option>
-          </select>
-          <ChevronDown size={16} />
-        </label>
+        <Select
+          id="calendar-view-select"
+          labelText="Calendar view"
+          hideLabel
+          value={currentView}
+          onChange={(event) => changeView(event.target.value)}
+          className="calendar-view-select"
+        >
+          <SelectItem value="dayGridMonth" text="Month" />
+          <SelectItem value="timeGridWeek" text="Week" />
+          <SelectItem value="timeGridDay" text="Day" />
+          <SelectItem value="listWeek" text="Schedules" />
+        </Select>
       </div>
     </div>
   );

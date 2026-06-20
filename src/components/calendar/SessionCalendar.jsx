@@ -1,6 +1,7 @@
 import "./SessionCalendar.scss";
 import { useMemo, useRef, useState } from "react";
-
+import { IconButton } from "@carbon/react";
+import { ChevronRight } from "@carbon/icons-react";
 import FullCalendarView from "./FullCalendarView";
 import MiniCalendar from "./MiniCalendar";
 import CalendarToolbar from "./CalendarToolbar";
@@ -67,10 +68,15 @@ function SessionCalendar({
         </div>
       ) : (
         <div className="calendar-sidebar-toggle">
-          <button type="button" aria-label="Open mini calendar" onClick={() => setMiniCalendarOpen(true)}>
-            <span />
-          </button>
-        </div>
+  <IconButton
+    kind="ghost"
+    label="Open mini calendar"
+    size="sm"
+    onClick={() => setMiniCalendarOpen(true)}
+  >
+    <ChevronRight />
+  </IconButton>
+</div>
       )}
 
       <div className="calendar-main">

@@ -134,9 +134,13 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
               associated with the student.
             </p>
           </div>
-          <button className="sh-close-btn" type="button" aria-label="Close">
-            ×
-          </button>
+          <IconButton
+  kind="ghost"
+  label="Close"
+  size="sm"
+>
+  ×
+</IconButton>
         </div>
 
         {/* ── TOOLBAR ── */}
@@ -246,16 +250,18 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
                         if (cell.info.header === "activity") {
                           return (
                             <TableCell key={cell.id}>
-                              <button
-                                className="sh-activity-link"
-                                onClick={() =>
-                                  setSummaryRow(
-                                    paginatedRows.find((r) => r.id === row.id)
-                                  )
-                                }
-                              >
-                                {cell.value}
-                              </button>
+                              <Button
+  kind="ghost"
+  size="sm"
+  className="sh-activity-link"
+  onClick={() =>
+    setSummaryRow(
+      paginatedRows.find((r) => r.id === row.id)
+    )
+  }
+>
+  {cell.value}
+</Button>
                             </TableCell>
                           );
                         }
@@ -352,12 +358,15 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
           </div>
         </div>
 
-        <button
-          className="sh-drawer-close"
-          onClick={() => setSummaryRow(null)}
-        >
-          ×
-        </button>
+        <IconButton
+  kind="ghost"
+  label="Close"
+  size="sm"
+  className="sh-drawer-close"
+  onClick={() => setSummaryRow(null)}
+>
+  ×
+</IconButton>
       </div>
 
       <div className="sh-section">
@@ -442,12 +451,13 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
           Open Report
         </Button>
 
-        <button
-          className="sh-notes-link"
-          type="button"
-        >
-          View Notes
-        </button>
+        <Button
+  kind="ghost"
+  size="sm"
+  className="sh-notes-link"
+>
+  View Notes
+</Button>
 
       </div>
 

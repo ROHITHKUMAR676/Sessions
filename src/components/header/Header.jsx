@@ -1,66 +1,77 @@
 import "./Header.scss";
 
 import {
-  Menu,
-  Search,
+  Header,
+  HeaderGlobalAction,
+  HeaderGlobalBar,
+  HeaderMenuButton,
+  HeaderName,
+  HeaderNavigation,
+  HeaderMenuItem,
+  Search as CarbonSearch,
+} from "@carbon/react";
+
+import {
   Help,
-  Launch,
   Terminal,
-  UserMultiple,
-  Calendar,
   UserFeedback,
   User,
   Calculator,
   Notification,
-  UserAvatar,
   ChevronDown,
 } from "@carbon/icons-react";
 
 function AppHeader() {
   return (
-    <div className="header-wrapper">
-      <header className="app-header">
+    <Header aria-label="Self Talk Psychologist" className="app-header">
+      <HeaderMenuButton
+        aria-label="Open menu"
+        className="menu-section"
+        onClick={() => {}}
+      />
 
-        <div className="menu-section">
-          <Menu size={20} />
-        </div>
+      <HeaderName href="#" prefix="" className="logo-section">
+        Self Talk Psychologist
+      </HeaderName>
 
-        <div className="logo-section">
-          Self Talk Psychologist
-        </div>
+      <CarbonSearch
+        id="global-search"
+        labelText="Search"
+        size="lg"
+        placeholder="Search resources and products"
+        className="search-section"
+      />
 
-        <div className="search-section">
-          <Search size={16} />
-          <input
-            type="text"
-            placeholder="Search resources and products"
-          />
-        </div>
-
-        <div className="nav-item">
-          Catalog
-        </div>
-
-        <div className="nav-item campus-item">
+      <HeaderNavigation aria-label="Session navigation" className="app-header-nav">
+        <HeaderMenuItem href="#">Catalog</HeaderMenuItem>
+        <HeaderMenuItem href="#" className="campus-item">
           <span>Select Campus</span>
           <ChevronDown size={16} />
-        </div>
+        </HeaderMenuItem>
+        <HeaderMenuItem href="#">Dr. B Ramesh</HeaderMenuItem>
+      </HeaderNavigation>
 
-        <div className="nav-item">
-          Dr. B Ramesh
-        </div>
-
-        <div className="icons-section">
+      <HeaderGlobalBar className="icons-section">
+        <HeaderGlobalAction aria-label="Help">
           <Help size={18} />
+        </HeaderGlobalAction>
+        <HeaderGlobalAction aria-label="Terminal">
           <Terminal size={18} />
+        </HeaderGlobalAction>
+        <HeaderGlobalAction aria-label="Users">
           <UserFeedback size={18} />
+        </HeaderGlobalAction>
+        <HeaderGlobalAction aria-label="Calculator">
           <Calculator size={18} />
+        </HeaderGlobalAction>
+        <HeaderGlobalAction aria-label="Notifications">
           <Notification size={18} />
+        </HeaderGlobalAction>
+        <HeaderGlobalAction aria-label="User profile">
           <User size={18} />
-        </div>
-
-      </header>
-    </div>
+        </HeaderGlobalAction>
+      </HeaderGlobalBar>
+    </Header>
   );
 }
 

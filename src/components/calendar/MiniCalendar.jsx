@@ -7,6 +7,7 @@ import {
 import {
   Checkbox,
   IconButton,
+  Button,
 } from "@carbon/react";
 
 import { useMemo, useState } from "react";
@@ -246,37 +247,26 @@ function MiniCalendar({
             displayDate.getMonth();
 
           return (
-            <button
-              key={date.toISOString()}
-              type="button"
-              onClick={() =>
-                selectDate(date)
-              }
-              style={{
-                border: "none",
-                background:
-                  "transparent",
-                cursor: "pointer",
-
-                fontSize: "14px",
-
-                color:
-                  !isCurrentMonth
-                    ? "#a8a8a8"
-                    : isSelected
-                    ? "#0f62fe"
-                    : "#525252",
-
-                fontWeight:
-                  isSelected
-                    ? 600
-                    : 400,
-
-                padding: 0,
-              }}
-            >
-              {date.getDate()}
-            </button>
+            <Button
+  key={date.toISOString()}
+  kind="ghost"
+  size="sm"
+  onClick={() => selectDate(date)}
+  style={{
+    minHeight: "24px",
+    width: "14px",
+    padding: 0,
+    justifyContent: "center",
+    color: !isCurrentMonth
+      ? "#a8a8a8"
+      : isSelected
+      ? "#0f62fe"
+      : "#525252",
+    fontWeight: isSelected ? 600 : 400,
+  }}
+>
+  {date.getDate()}
+</Button>
           );
         })}
       </div>

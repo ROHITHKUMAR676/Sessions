@@ -18,34 +18,21 @@
   width: 32px;
   background: #ffffff;
   border-right: 1px solid #e0e0e0;
-}
 
-.calendar-sidebar-toggle button {
-  display: inline-flex;
-  align-items: center;
+  display: flex;
+  align-items: flex-start;
   justify-content: center;
+}
+
+.calendar-sidebar-toggle .cds--btn {
   width: 32px;
-  height: 52px;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
+  min-height: 52px;
+  padding: 0;
 }
 
-.calendar-sidebar-toggle span,
-.calendar-sidebar-toggle span::before {
-  display: block;
-  width: 13px;
-  height: 9px;
-  border: 1px solid #525252;
-  content: "";
-}
-
-.calendar-sidebar-toggle span::before {
-  width: 3px;
-  height: 3px;
-  margin: -3px 0 0 7px;
-  border-bottom: 0;
-  background: #ffffff;
+.calendar-sidebar-toggle .cds--btn svg {
+  width: 16px;
+  height: 16px;
 }
 
 .calendar-main {
@@ -78,8 +65,8 @@
   font-weight: 600;
 }
 
-.toolbar-left button,
-.toolbar-right button,
+.toolbar-left .cds--btn--icon-only,
+.toolbar-right .cds--btn--icon-only,
 .calendar-panel-toggle {
   display: inline-flex;
   align-items: center;
@@ -91,12 +78,15 @@
   cursor: pointer;
 }
 
-.toolbar-left button {
+.toolbar-left .cds--btn--icon-only {
   width: 30px;
+  min-height: 52px;
+  padding: 0;
 }
 
-.today-btn {
+.today-btn.cds--btn {
   width: 120px !important;
+  min-height: 52px;
   margin-left: 8px;
   background: #6f6f6f !important;
   color: #ffffff !important;
@@ -105,74 +95,68 @@
   padding-left: 22px;
 }
 
-.calendar-search-field {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.calendar-search-field.cds--search {
   min-width: 190px;
+  width: 190px;
+  height: 52px;
   margin-left: 16px;
-  color: #525252;
+  background: transparent;
 }
 
-.calendar-search-field input {
-  width: 138px;
-  border: 0;
-  outline: 0;
+.calendar-search-field .cds--search-input {
+  height: 52px;
+  border-bottom: 0;
   background: transparent;
   color: #161616;
-  font-family: inherit;
   font-size: 13px;
 }
 
-.calendar-search-field input::placeholder {
+.calendar-search-field .cds--search-input::placeholder {
   color: #8d8d8d;
+}
+
+.calendar-search-field .cds--search-magnifier {
+  color: #525252;
+  fill: #525252;
 }
 
 .toolbar-right {
   margin-left: auto;
 }
 
-.toolbar-right > svg,
-.toolbar-right > button {
+.toolbar-right > .cds--btn--icon-only {
   box-sizing: content-box;
   padding: 0 16px;
   color: #525252;
 }
 
-.toolbar-right > button {
-  width: auto;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
+.toolbar-right > .cds--btn--icon-only {
+  width: 16px;
+  min-height: 52px;
 }
 
-.calendar-view-select {
+.calendar-view-select.cds--select {
   position: relative;
-  display: flex;
-  align-items: center;
   width: 132px;
   height: 100%;
   border-left: 1px solid #e0e0e0;
 }
 
-.calendar-view-select select {
+.calendar-view-select .cds--select-input {
   width: 100%;
-  height: 100%;
-  appearance: none;
+  height: 52px;
+  min-height: 52px;
   border: 0;
-  outline: 0;
+  border-bottom: 0;
   background: transparent;
   color: #161616;
   cursor: pointer;
-  font-family: inherit;
   font-size: 13px;
   padding: 0 34px 0 18px;
 }
 
-.calendar-view-select svg {
-  position: absolute;
+.calendar-view-select .cds--select-input__wrapper svg {
   right: 18px;
-  pointer-events: none;
 }
 
 .calendar-placeholder {
@@ -351,11 +335,22 @@
 }
 
 .full-calendar-surface .fc-dayGridMonth-view .fc-col-header-cell {
+  background: #e0e0e0 !important;
   height: 40px;
 }
 
 .full-calendar-surface .fc-dayGridMonth-view .fc-col-header-cell-cushion {
-  padding: 12px 10px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 40px;
+  padding: 0 !important;
+
+  color: #161616 !important;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
 }
 
 .calendar-day-header {
@@ -738,7 +733,7 @@
     min-width: 150px;
   }
 
-  .calendar-search-field input {
+  .calendar-search-field.cds--search {
     width: 96px;
   }
 
@@ -838,12 +833,11 @@
     padding: 0 12px;
   }
 
-  .toolbar-right > svg,
-  .toolbar-right > button {
+  .toolbar-right > .cds--btn--icon-only {
     padding: 0 12px;
   }
 
-  .calendar-view-select {
+  .calendar-view-select.cds--select {
     width: 116px;
   }
 
