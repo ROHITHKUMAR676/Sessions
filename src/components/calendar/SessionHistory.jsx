@@ -1,5 +1,10 @@
 import { useMemo, useState } from "react";
-
+import { SidePanel } from "@carbon/react";
+import {
+  ComposedModal,
+  ModalHeader,
+  ModalBody,
+} from "@carbon/react";
 import {
   DataTable,
   Table,
@@ -357,14 +362,15 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
 
             {/* Facilitator Guide */}
             <div className="sh-guide-section">
-              <button
-                className="sh-guide-toggle"
-                onClick={() => setGuideOpen((o) => !o)}
-                aria-expanded={guideOpen}
-              >
-                {guideOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                <span>Facilitator guide</span>
-              </button>
+              <Button
+  kind="ghost"
+  size="sm"
+  className="sh-guide-toggle"
+  onClick={() => setGuideOpen((o) => !o)}
+>
+  {guideOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+  <span>Facilitator guide</span>
+</Button>
               {guideOpen && (
                 <ul className="sh-guide-list">
                   <li>
