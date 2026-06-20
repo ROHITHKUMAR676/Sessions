@@ -20,11 +20,10 @@ import {
 } from "@carbon/react";
 
 import {
-  Renew,
   Filter,
   Download,
   Launch,
-  Bookmark,
+  Renew,
   CheckmarkFilled,
   OverflowMenuHorizontal,
   ChevronDown,
@@ -75,19 +74,15 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
             },
           ];
 
-    return source.map((item, index) => ({
+    return source.map((item) => ({
       id: String(item.id),
-      activity:
-        index === 0
-          ? "Swithika Aravind - Individual Session"
-          : item.title,
-      sessionId:
-        index === 0 ? "ASN12235BN811V" : `ASN${item.id}`,
+      activity: item.title,
+      sessionId: `ASN${item.id}`,
       date: "12 Mar 2026",
       status: "Completed",
-      category: index === 0 ? "Workshop" : "Session",
-      type: "Individual",
-      facilitator: "Saranya LK",
+      category: item.extendedProps?.category || "Session",
+      type: item.extendedProps?.sessionType || "Individual",
+      facilitator: item.extendedProps?.facilitator || "Saranya LK",
       reportStatus: "Pending",
     }));
   }, [sessions]);
@@ -117,7 +112,53 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
   };
 
   const downloadHistory = () => {
-    console.log("download csv");
+    const exportHeaders = headers.filter(
+      (header) => header.key !== "actions"
+    );
+    const escapeCsv = (value) =>
+      `"${String(value ?? "").replaceAll('"', '""')}"`;
+    const csv = [
+      exportHeaders
+        .map((header) => escapeCsv(header.header))
+        .join(","),
+      ...filteredRows.map((row) =>
+        exportHeaders
+          .map((header) => escapeCsv(row[header.key]))
+          .join(",")
+      ),
+    ].join("\n");
+    const url = URL.createObjectURL(
+      new Blob([csv], {
+        type: "text/csv;charset=utf-8",
+      })
+    );
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "session-history.csv";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const saveHistory = () => {
+    localStorage.setItem(
+      "session-history-saved-view",
+      JSON.stringify({
+        savedAt: new Date().toISOString(),
+        search,
+        category,
+        rows: filteredRows,
+      })
+    );
+  };
+
+  const toggleFilter = () => {
+    setCategory((currentCategory) =>
+      currentCategory === "All" ? "Session" : "All"
+    );
+    setPage(1);
   };
 
   return (
@@ -180,13 +221,15 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
               kind="ghost"
               label="Save"
               size="sm"
+              onClick={saveHistory}
             >
-              <Bookmark />
+              <Renew />
             </IconButton>
             <IconButton
               kind="ghost"
               label="Filter"
               size="sm"
+              onClick={toggleFilter}
             >
               <Filter />
             </IconButton>
@@ -212,8 +255,14 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
               itemText="Refresh"
               onClick={refreshHistory}
             />
-            <OverflowMenuItem itemText="Export" />
-            <OverflowMenuItem itemText="Delete Selected" isDelete />
+            <OverflowMenuItem
+              itemText="Export"
+              onClick={downloadHistory}
+            />
+            <OverflowMenuItem
+              itemText="Save"
+              onClick={saveHistory}
+            />
           </OverflowMenu>
         </div>
 
@@ -300,8 +349,9 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
                                   onClick={() => onEdit?.(row.id)}
                                 />
                                 <OverflowMenuItem
-                                  itemText="Delete"
+                                  itemText="Delete app"
                                   isDelete
+                                  className="sh-delete-menu-item"
                                   onClick={() => onDelete?.(row.id)}
                                 />
                               </OverflowMenu>

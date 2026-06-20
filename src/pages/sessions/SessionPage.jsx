@@ -1,6 +1,5 @@
 import { useState } from "react";
 
-import { Button } from "@carbon/react";
 import QuickSchedulePopup from "../../components/calendar/QuickSchedulePopup";
 import ScheduleDrawer from "../../components/calendar/ScheduleDrawer";
 import SessionCalendar from "../../components/calendar/SessionCalendar";
@@ -243,7 +242,7 @@ function SessionPage() {
         </div>
 
         {/* Tabs */}
-        <Tabs
+<Tabs
   selectedIndex={activeTab === "calendar" ? 0 : 1}
   onChange={({ selectedIndex }) =>
     setActiveTab(
@@ -252,9 +251,11 @@ function SessionPage() {
         : "history"
     )
   }
-  className="session-tabs"
 >
-  <TabList aria-label="Session Navigation">
+  <TabList
+    aria-label="Session Navigation"
+    className="session-tabs"
+  >
     <Tab>Session Calendar</Tab>
     <Tab>Session History</Tab>
   </TabList>
@@ -289,7 +290,7 @@ function SessionPage() {
     onDelete={(id) => {
       setSessions((prev) =>
         prev.filter(
-          (session) => session.id !== id
+          (session) => String(session.id) !== String(id)
         )
       );
     }}

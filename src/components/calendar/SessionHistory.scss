@@ -306,6 +306,22 @@
   width: 40px;
 }
 
+.cds--overflow-menu-options .sh-delete-menu-item,
+.bx--overflow-menu-options .sh-delete-menu-item,
+.cds--overflow-menu-options .sh-delete-menu-item button,
+.bx--overflow-menu-options .sh-delete-menu-item button {
+  background: #da1e28;
+  color: #ffffff;
+}
+
+.cds--overflow-menu-options .sh-delete-menu-item:hover,
+.bx--overflow-menu-options .sh-delete-menu-item:hover,
+.cds--overflow-menu-options .sh-delete-menu-item button:hover,
+.bx--overflow-menu-options .sh-delete-menu-item button:hover {
+  background: #b81921;
+  color: #ffffff;
+}
+
 // ─── Pagination ───────────────────────────────────────────────────────────────
 
 .cds--pagination,

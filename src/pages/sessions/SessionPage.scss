@@ -49,29 +49,61 @@
   justify-content: space-between;
 }
 
+/* ===================================
+   Carbon Tabs
+=================================== */
+
 .session-tabs {
-  display: flex;
   width: fit-content;
-  border-bottom: 0;
 }
 
-.session-tab {
-  padding: 14px 24px;
-  border-top: 2px solid transparent;
-  border-right: 1px solid #c6c6c6;
+.session-tabs.cds--tab-list {
+  border-bottom: none;
+}
+
+.session-tabs .cds--tab {
+  height: 48px;
+  min-height: 48px;
+
+  padding: 0 24px;
+
   background: #e0e0e0;
   color: #525252;
-  cursor: pointer;
+
+  border: none;
+
   font-size: 14px;
+  font-weight: 400;
+
   white-space: nowrap;
 }
 
-.session-tab.active {
-  border-top-color: #0f62fe;
-  background: #ffffff;
+.session-tabs .cds--tab:hover {
+  background: #d8d8d8;
   color: #161616;
-  font-weight: 600;
 }
+
+.session-tabs .cds--tab--selected {
+  background: #ffffff !important;
+  color: #161616 !important;
+  font-weight: 600;
+
+  border-top: 2px solid #0f62fe;
+}
+
+.session-tabs .cds--tab--selected::after {
+  display: none;
+}
+
+.session-tabs .cds--tab:focus,
+.session-tabs .cds--tab:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+/* ===================================
+   Responsive
+=================================== */
 
 @media (max-width: 760px) {
   .sessions-breadcrumb {
@@ -111,11 +143,5 @@
   .session-tabs {
     width: 100%;
     overflow-x: auto;
-  }
-
-  .session-tab {
-    flex: 1 0 50%;
-    padding: 13px 14px;
-    text-align: center;
   }
 }
