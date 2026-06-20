@@ -49,61 +49,101 @@
   justify-content: space-between;
 }
 
-/* ===================================
-   Carbon Tabs
-=================================== */
+/* ── TAB STYLES (folder/raised design) ── */
 
 .session-tabs {
-  width: fit-content;
+  width: 100%;
+  background: transparent;
+  border-bottom: 0;
+  padding-left: 0;
+  box-sizing: border-box;
 }
 
-.session-tabs.cds--tab-list {
-  border-bottom: none;
+.session-tabs .cds--tab--list {
+  display: flex;
+  width: auto;
+  background: transparent;
+  overflow: visible;
+  border-bottom: 2px solid #c6c6c6;
 }
 
-.session-tabs .cds--tab {
-  height: 48px;
-  min-height: 48px;
-
+.session-tabs .cds--tabs__nav-item {
+  flex: 0 0 auto;
+  width: 200px;
+  min-width: 160px;
+  max-width: 220px;
+  height: 44px;
   padding: 0 24px;
-
+  border: 1px solid #c6c6c6;
+  border-bottom: none;
+  border-radius: 0;        /* ← removed rounded corners */
   background: #e0e0e0;
   color: #525252;
-
-  border: none;
-
   font-size: 14px;
   font-weight: 400;
-
-  white-space: nowrap;
+  margin-right: 0;         /* ← removed gap between tabs */
+  position: relative;
+  top: 2px;
 }
 
-.session-tabs .cds--tab:hover {
-  background: #d8d8d8;
+.session-tabs .cds--tabs__nav-item:hover {
+  background: #d1d1d1;
   color: #161616;
 }
 
-.session-tabs .cds--tab--selected {
-  background: #ffffff !important;
-  color: #161616 !important;
+.session-tabs .cds--tabs__nav-item--selected {
+  background: #ffffff;
+  color: #161616;
   font-weight: 600;
-
+  border-color: #c6c6c6;
+  border-bottom: 2px solid #ffffff;
   border-top: 2px solid #0f62fe;
+  z-index: 1;
 }
 
-.session-tabs .cds--tab--selected::after {
-  display: none;
+.session-tabs .cds--tabs__nav-item--selected:hover {
+  background: #ffffff;
+  color: #161616;
 }
 
-.session-tabs .cds--tab:focus,
-.session-tabs .cds--tab:focus-visible {
+.session-tabs .cds--tabs__nav-item:focus {
   outline: none;
   box-shadow: none;
 }
 
-/* ===================================
-   Responsive
-=================================== */
+.session-tabs .cds--tabs__nav-link {
+  display: flex;
+  align-items: center;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.session-tabs .cds--tab--overflow-nav-button {
+  display: none;
+}
+
+/* ── END TAB STYLES ── */
+
+.session-tab {
+  padding: 14px 24px;
+  border-top: 2px solid transparent;
+  border-right: 1px solid #c6c6c6;
+  background: #e0e0e0;
+  color: #525252;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.session-tab.active {
+  border-top-color: #0f62fe;
+  background: #ffffff;
+  color: #161616;
+  font-weight: 600;
+}
 
 @media (max-width: 760px) {
   .sessions-breadcrumb {
@@ -143,5 +183,11 @@
   .session-tabs {
     width: 100%;
     overflow-x: auto;
+  }
+
+  .session-tab {
+    flex: 1 0 50%;
+    padding: 13px 14px;
+    text-align: center;
   }
 }

@@ -37,22 +37,6 @@
   line-height: 1.5;
 }
 
-.sh-close-btn {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  color: #8d8d8d;
-  font-size: 1.125rem;
-  line-height: 1;
-  padding: 0;
-  flex-shrink: 0;
-  margin-top: 0.125rem;
-
-  &:hover {
-    color: #161616;
-  }
-}
-
 // ─── Toolbar ──────────────────────────────────────────────────────────────────
 
 .sh-toolbar {
@@ -63,7 +47,6 @@
   background: #f4f4f4;
 }
 
-// Category: inline label + select, no stacking
 .sh-toolbar__category {
   display: flex;
   align-items: center;
@@ -81,9 +64,7 @@
   white-space: nowrap;
 }
 
-// Override Carbon select to look inline / flat in toolbar
 .sh-category-select {
-  // Carbon wraps in .cds--select
   .cds--select-input,
   .bx--select-input {
     background: transparent;
@@ -104,11 +85,9 @@
   }
 }
 
-// Search stretches
 .sh-toolbar__search {
   flex: 1;
 
-  // Flatten Carbon search for toolbar use
   .cds--search,
   .bx--search {
     background: #f4f4f4;
@@ -137,7 +116,6 @@
   }
 }
 
-// Icon button cluster
 .sh-toolbar__icons {
   display: flex;
   align-items: center;
@@ -162,9 +140,7 @@
   }
 }
 
-// "Actions" overflow button – dark pill matching screenshot
 .sh-actions-btn {
-  // Carbon OverflowMenu trigger button
   &.cds--overflow-menu,
   &.bx--overflow-menu {
     background: #161616;
@@ -191,12 +167,10 @@
       white-space: nowrap;
     }
 
-    // Hide the default overflow icon dots
     svg {
       display: none;
     }
 
-    // Show a caret instead via CSS
     &::after {
       content: "▾";
       font-size: 0.75rem;
@@ -246,25 +220,31 @@
   }
 }
 
-// Activity link
 .sh-activity-link {
-  border: none;
-  background: transparent;
-  color: #0f62fe;
+  border: none !important;
+  background: transparent !important;
+  color: #0f62fe !important;
   cursor: pointer;
-  padding: 0;
+  padding: 0 !important;
   text-align: left;
   font-size: 0.8125rem;
   line-height: 1.4;
+  box-shadow: none !important;
+  outline: none !important;
 
   &:hover {
     text-decoration: underline;
+    background: transparent !important;
   }
+}
 
-  &:focus {
-    outline: 2px solid #0f62fe;
-    outline-offset: 2px;
-  }
+.sh-activity-link.cds--btn,
+.sh-activity-link.cds--btn:focus,
+.sh-activity-link.cds--btn:active,
+.sh-activity-link.cds--btn:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
 }
 
 .sh-status {
@@ -299,7 +279,6 @@
   }
 }
 
-// Actions cell – tighter
 .sh-actions-cell {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
@@ -331,184 +310,310 @@
   font-size: 0.75rem;
 }
 
-// ─── Summary Drawer ───────────────────────────────────────────────────────────
-// ─── Summary Drawer ───────────────────────────────────────────────────────────
+// ─── Overlay ──────────────────────────────────────────────────────────────────
 
 .sh-overlay {
   position: fixed;
-  inset: 0;
-  background: rgba(22, 22, 22, 0.32);
+  // offset by Carbon global header (48px) so overlay sits below navbar
+  top: 48px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(22, 22, 22, 0.4);
   display: flex;
   justify-content: flex-end;
   z-index: 999;
 }
 
+// ─── Drawer ───────────────────────────────────────────────────────────────────
+
 .sh-drawer {
-  width: 368px;
-  height: 100vh;
+  width: 400px;
+  // fill from just below navbar to bottom of screen
+  height: 100%;
   background: #ffffff;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  border-left: 1px solid #c6c6c6;
-  box-shadow: none;
+  border-left: 1px solid #e0e0e0;
 }
+
+// ── Drawer Header ──
 
 .sh-drawer-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  min-height: 64px;
-  padding: 16px 16px 10px;
+  padding: 16px 16px 14px;
   border-bottom: 1px solid #e0e0e0;
+  background: #ffffff;
+  flex-shrink: 0;
+  min-height: 56px;
+  // no position tricks — plain static flow
+  position: static;
+}
+
+.sh-drawer-header__text {
+  flex: 1;
+  padding-right: 12px;
 }
 
 .sh-drawer-title {
   font-size: 14px;
   font-weight: 600;
-  line-height: 18px;
   color: #161616;
+  line-height: 20px;
+  margin: 0 0 2px;
 }
 
 .sh-drawer-subtitle {
-  margin-top: 4px;
   font-size: 11px;
-  color: #6f6f6f;
-  text-transform: uppercase;
-}
-
-.sh-drawer-close {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  color: #6f6f6f;
-  font-size: 18px;
-  line-height: 1;
+  color: #8d8d8d;
+  line-height: 16px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  display: block;
+  margin: 0;
   padding: 0;
 }
 
+// ── Drawer Close Button ──
+
+.sh-drawer-close {
+  flex-shrink: 0;
+  // static so it stays inside flexbox header row
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
+  margin: 0 !important;
+
+  &.cds--btn--icon-only,
+  &.bx--btn--icon-only {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    padding: 0 !important;
+    color: #525252 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+
+    &:hover {
+      background: #f4f4f4 !important;
+      color: #161616 !important;
+    }
+
+    &:focus {
+      outline: 2px solid #0f62fe !important;
+      outline-offset: -2px !important;
+    }
+  }
+
+  svg {
+    fill: currentColor !important;
+    color: inherit !important;
+    width: 16px !important;
+    height: 16px !important;
+  }
+}
+
+// ── Session Summary Section ──
+
 .sh-section {
-  padding: 16px 18px 18px;
   background: #d0e2ff;
   border-bottom: 1px solid #a6c8ff;
+  padding: 16px 16px 20px;
+  flex-shrink: 0;
 }
 
 .sh-section-title-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
-.sh-section-title-row span:first-child {
+.sh-section-heading {
   font-size: 13px;
   font-weight: 600;
   color: #161616;
 }
 
 .ai-chip {
-  width: 20px;
-  height: 20px;
-  border: 1px solid #8d8d8d;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid #8d8d8d;
   font-size: 10px;
+  font-weight: 600;
   color: #525252;
+  background: transparent;
+  letter-spacing: 0;
+  flex-shrink: 0;
 }
 
 .sh-section-content {
   font-size: 12px;
-  line-height: 17px;
+  line-height: 18px;
   color: #161616;
+  margin: 0;
 }
+
+// ── Facilitator Guide Section ──
 
 .sh-guide-section {
   background: #f4f4f4;
-  padding: 0 18px 16px;
-  border-top: 1px solid #e0e0e0;
   border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0;
 }
 
-.sh-guide-title {
+.sh-guide-toggle {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-height: 42px;
-  margin: 0 -18px 12px;
-  padding: 0 18px;
+  gap: 8px;
+  width: 100%;
+  padding: 0 16px;
+  height: 42px;
   background: #ffffff;
+  border: none;
   border-bottom: 1px solid #e0e0e0;
+  cursor: pointer;
   font-size: 13px;
   font-weight: 600;
   color: #161616;
+  text-align: left;
+
+  svg {
+    fill: #161616;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    background: #f4f4f4;
+  }
+
+  &:focus {
+    outline: 2px solid #0f62fe;
+    outline-offset: -2px;
+  }
 }
 
-.sh-guide-section ul {
+.sh-guide-list {
   margin: 0;
-  padding-left: 18px;
+  padding: 14px 16px 16px 32px;
+  list-style: disc;
+
+  li {
+    font-size: 12px;
+    line-height: 18px;
+    color: #525252;
+    margin-bottom: 8px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
 }
 
-.sh-guide-section li {
-  font-size: 12px;
-  line-height: 18px;
-  color: #525252;
-  margin-bottom: 8px;
-}
+// ── Overview Section ──
 
 .sh-overview-section {
-  padding: 18px;
+  padding: 20px 16px;
+  flex: 1;
 }
 
 .sh-overview-title {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  margin-bottom: 18px;
+  color: #161616;
+  margin-bottom: 16px;
 }
 
 .sh-overview-row {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 16px;
-  margin-bottom: 10px;
-  font-size: 12px;
+  margin-bottom: 12px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
-.sh-overview-row span:first-child {
+.sh-overview-label {
+  font-size: 12px;
   color: #525252;
 }
 
-.sh-overview-row span:last-child {
-  color: #6f6f6f;
+.sh-overview-value {
+  font-size: 12px;
+  color: #161616;
   text-align: right;
 }
 
-.submitted-status {
+.sh-overview-value--submitted {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   color: #24a148;
   font-weight: 500;
 }
 
-.sh-drawer-footer {
-  margin-top: auto;
-  padding: 0 18px 18px;
+.sh-submitted-icon {
+  fill: #24a148;
+  flex-shrink: 0;
 }
 
-.sh-drawer-footer .cds--btn {
-  width: 100%;
-  max-width: none;
-  min-height: 48px;
-  justify-content: space-between;
+// ── Drawer Footer ──
+
+.sh-drawer-footer {
+  padding: 16px 16px 24px;
+  margin-top: auto;
+  flex-shrink: 0;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.sh-open-report-btn {
+  &.cds--btn,
+  &.bx--btn {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 48px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    padding-right: 1rem !important;
+  }
 }
 
 .sh-notes-link {
-  margin-top: 12px;
-  border: none;
-  background: transparent;
-  color: #0f62fe;
-  cursor: pointer;
-  padding: 0;
-  font-size: 12px;
+  &.cds--btn,
+  &.bx--btn {
+    color: #0f62fe !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    font-size: 12px !important;
+    padding: 12px 0 0 !important;
+    height: auto !important;
+    min-height: auto !important;
+    justify-content: flex-start !important;
+
+    &:hover {
+      text-decoration: underline;
+      background: transparent !important;
+    }
+  }
 }
+
+// ─── Responsive ───────────────────────────────────────────────────────────────
+
 @media (max-width: 900px) {
   .sh-toolbar {
     flex-wrap: wrap;
@@ -524,6 +629,10 @@
 
   .sh-toolbar__search {
     width: 100%;
+  }
+
+  .sh-overlay {
+    top: 48px;
   }
 
   .sh-drawer {

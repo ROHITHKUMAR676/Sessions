@@ -27,6 +27,8 @@ import {
   CheckmarkFilled,
   OverflowMenuHorizontal,
   ChevronDown,
+  ChevronRight,
+  Close,
 } from "@carbon/icons-react";
 
 import "./SessionHistory.scss";
@@ -47,7 +49,6 @@ function StatusIcon({ status }) {
   if (status === "completed") {
     return <CheckmarkFilled className="sh-status-icon sh-status-icon--completed" />;
   }
-
   return (
     <span className="sh-status-icon sh-status-icon--pending" aria-hidden="true">
       <OverflowMenuHorizontal size={12} />
@@ -61,6 +62,7 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
   const [summaryRow, setSummaryRow] = useState(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+  const [guideOpen, setGuideOpen] = useState(true);
 
   const rows = useMemo(() => {
     const source =
@@ -93,12 +95,10 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
       Object.values(row).some((value) =>
         String(value).toLowerCase().includes(search.toLowerCase())
       );
-
     const matchesCategory =
       category === "All" ||
       row.category === category ||
       category === "Session";
-
     return matchesSearch && matchesCategory;
   });
 
@@ -112,28 +112,16 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
   };
 
   const downloadHistory = () => {
-    const exportHeaders = headers.filter(
-      (header) => header.key !== "actions"
-    );
-    const escapeCsv = (value) =>
-      `"${String(value ?? "").replaceAll('"', '""')}"`;
+    const exportHeaders = headers.filter((h) => h.key !== "actions");
+    const escapeCsv = (value) => `"${String(value ?? "").replaceAll('"', '""')}"`;
     const csv = [
-      exportHeaders
-        .map((header) => escapeCsv(header.header))
-        .join(","),
+      exportHeaders.map((h) => escapeCsv(h.header)).join(","),
       ...filteredRows.map((row) =>
-        exportHeaders
-          .map((header) => escapeCsv(row[header.key]))
-          .join(",")
+        exportHeaders.map((h) => escapeCsv(row[h.key])).join(",")
       ),
     ].join("\n");
-    const url = URL.createObjectURL(
-      new Blob([csv], {
-        type: "text/csv;charset=utf-8",
-      })
-    );
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
     const link = document.createElement("a");
-
     link.href = url;
     link.download = "session-history.csv";
     document.body.appendChild(link);
@@ -145,19 +133,12 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
   const saveHistory = () => {
     localStorage.setItem(
       "session-history-saved-view",
-      JSON.stringify({
-        savedAt: new Date().toISOString(),
-        search,
-        category,
-        rows: filteredRows,
-      })
+      JSON.stringify({ savedAt: new Date().toISOString(), search, category, rows: filteredRows })
     );
   };
 
   const toggleFilter = () => {
-    setCategory((currentCategory) =>
-      currentCategory === "All" ? "Session" : "All"
-    );
+    setCategory((c) => (c === "All" ? "Session" : "All"));
     setPage(1);
   };
 
@@ -175,18 +156,13 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
               associated with the student.
             </p>
           </div>
-          <IconButton
-  kind="ghost"
-  label="Close"
-  size="sm"
->
-  ×
-</IconButton>
+          <IconButton kind="ghost" label="Close" size="sm">
+            <Close />
+          </IconButton>
         </div>
 
         {/* ── TOOLBAR ── */}
         <div className="sh-toolbar">
-          {/* Category inline select */}
           <div className="sh-toolbar__category">
             <span className="sh-toolbar__category-label">Category</span>
             <Select
@@ -204,7 +180,6 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
             </Select>
           </div>
 
-          {/* Search */}
           <div className="sh-toolbar__search">
             <Search
               size="sm"
@@ -215,35 +190,18 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
             />
           </div>
 
-          {/* Icon actions */}
           <div className="sh-toolbar__icons">
-            <IconButton
-              kind="ghost"
-              label="Save"
-              size="sm"
-              onClick={saveHistory}
-            >
+            <IconButton kind="ghost" label="Save" size="sm" onClick={saveHistory}>
               <Renew />
             </IconButton>
-            <IconButton
-              kind="ghost"
-              label="Filter"
-              size="sm"
-              onClick={toggleFilter}
-            >
+            <IconButton kind="ghost" label="Filter" size="sm" onClick={toggleFilter}>
               <Filter />
             </IconButton>
-            <IconButton
-              kind="ghost"
-              label="Download"
-              size="sm"
-              onClick={downloadHistory}
-            >
+            <IconButton kind="ghost" label="Download" size="sm" onClick={downloadHistory}>
               <Download />
             </IconButton>
           </div>
 
-          {/* Actions overflow styled as dark button */}
           <OverflowMenu
             ariaLabel="Actions"
             flipped
@@ -251,71 +209,46 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
             className="sh-actions-btn"
             menuOptionsClass="sh-actions-menu"
           >
-            <OverflowMenuItem
-              itemText="Refresh"
-              onClick={refreshHistory}
-            />
-            <OverflowMenuItem
-              itemText="Export"
-              onClick={downloadHistory}
-            />
-            <OverflowMenuItem
-              itemText="Save"
-              onClick={saveHistory}
-            />
+            <OverflowMenuItem itemText="Refresh" onClick={refreshHistory} />
+            <OverflowMenuItem itemText="Export" onClick={downloadHistory} />
+            <OverflowMenuItem itemText="Save" onClick={saveHistory} />
           </OverflowMenu>
         </div>
 
         {/* ── TABLE ── */}
         <TableContainer className="sh-table-container">
           <DataTable rows={paginatedRows} headers={headers}>
-            {({
-              rows,
-              headers,
-              getTableProps,
-              getHeaderProps,
-              getRowProps,
-            }) => (
+            {({ rows, headers, getTableProps, getHeaderProps, getRowProps }) => (
               <Table {...getTableProps()} size="md">
                 <TableHead>
                   <TableRow>
                     {headers.map((header) => (
-                      <TableHeader
-                        key={header.key}
-                        {...getHeaderProps({ header })}
-                      >
+                      <TableHeader key={header.key} {...getHeaderProps({ header })}>
                         {header.header}
                       </TableHeader>
                     ))}
                   </TableRow>
                 </TableHead>
-
                 <TableBody>
                   {rows.map((row) => (
                     <TableRow key={row.id} {...getRowProps({ row })}>
                       {row.cells.map((cell) => {
-
-                        /* Activity – blue link */
                         if (cell.info.header === "activity") {
                           return (
                             <TableCell key={cell.id}>
                               <Button
-  kind="ghost"
-  size="sm"
-  className="sh-activity-link"
-  onClick={() =>
-    setSummaryRow(
-      paginatedRows.find((r) => r.id === row.id)
-    )
-  }
->
-  {cell.value}
-</Button>
+                                kind="ghost"
+                                size="sm"
+                                className="sh-activity-link"
+                                onClick={() =>
+                                  setSummaryRow(paginatedRows.find((r) => r.id === row.id))
+                                }
+                              >
+                                {cell.value}
+                              </Button>
                             </TableCell>
                           );
                         }
-
-                        /* Status – green dot + text */
                         if (cell.info.header === "status") {
                           return (
                             <TableCell key={cell.id}>
@@ -326,8 +259,6 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
                             </TableCell>
                           );
                         }
-
-                        /* Report Status – gray dot + text */
                         if (cell.info.header === "reportStatus") {
                           return (
                             <TableCell key={cell.id}>
@@ -338,16 +269,11 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
                             </TableCell>
                           );
                         }
-
-                        /* Row overflow menu */
                         if (cell.info.header === "actions") {
                           return (
                             <TableCell key={cell.id} className="sh-actions-cell">
                               <OverflowMenu flipped size="sm">
-                                <OverflowMenuItem
-                                  itemText="Edit"
-                                  onClick={() => onEdit?.(row.id)}
-                                />
+                                <OverflowMenuItem itemText="Edit" onClick={() => onEdit?.(row.id)} />
                                 <OverflowMenuItem
                                   itemText="Delete app"
                                   isDelete
@@ -358,10 +284,7 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
                             </TableCell>
                           );
                         }
-
-                        return (
-                          <TableCell key={cell.id}>{cell.value}</TableCell>
-                        );
+                        return <TableCell key={cell.id}>{cell.value}</TableCell>;
                       })}
                     </TableRow>
                   ))}
@@ -385,135 +308,118 @@ function SessionHistory({ sessions = [], onEdit, onDelete }) {
       </div>
 
       {/* ── SUMMARY DRAWER ── */}
-      {/* ── SUMMARY DRAWER ── */}
-{summaryRow && (
-  <div
-    className="sh-overlay"
-    onClick={(e) => {
-      if (e.target === e.currentTarget) {
-        setSummaryRow(null);
-      }
-    }}
-  >
-    <aside className="sh-drawer">
-
-      <div className="sh-drawer-header">
-        <div>
-          <div className="sh-drawer-title">
-            {summaryRow.activity}
-          </div>
-
-          <div className="sh-drawer-subtitle">
-            ASN12235BN811V · 12 Mar 2026 · Saranya LK
-          </div>
-        </div>
-
-        <IconButton
-  kind="ghost"
-  label="Close"
-  size="sm"
-  className="sh-drawer-close"
-  onClick={() => setSummaryRow(null)}
->
-  ×
-</IconButton>
-      </div>
-
-      <div className="sh-section">
-        <div className="sh-section-title-row">
-          <span>Session Summary</span>
-          <span className="ai-chip">AI</span>
-        </div>
-
-        <div className="sh-section-content">
-          During this individual counselling session,
-          the student discussed current academic and
-          personal concerns, exploring thoughts,
-          emotions and experiences contributing to
-          their present challenges. Through guided
-          reflection, the student identified key
-          stressors, strengths and areas requiring
-          support.
-        </div>
-      </div>
-
-      <div className="sh-guide-section">
-        <div className="sh-guide-title">
-          <ChevronDown size={16} />
-          <span>Facilitator guide</span>
-        </div>
-
-        <ul>
-          <li>
-            Helps participants understand and embrace
-            change by identifying fears and strengths.
-          </li>
-
-          <li>
-            Uses reflective activities and self
-            reflection.
-          </li>
-
-          <li>
-            Encourages participants to take meaningful
-            actions confidently.
-          </li>
-        </ul>
-      </div>
-
-      <div className="sh-overview-section">
-
-        <div className="sh-overview-title">
-          Overview
-        </div>
-
-        <div className="sh-overview-row">
-          <span>Session Date</span>
-          <span>19 May 2026</span>
-        </div>
-
-        <div className="sh-overview-row">
-          <span>Facilitator</span>
-          <span>Janice Antony</span>
-        </div>
-
-        <div className="sh-overview-row">
-          <span>Session Type</span>
-          <span>Follow Up</span>
-        </div>
-
-        <div className="sh-overview-row">
-          <span>Report Status</span>
-
-          <span className="submitted-status">
-            ● Submitted
-          </span>
-        </div>
-
-      </div>
-
-      <div className="sh-drawer-footer">
-
-        <Button
-          kind="primary"
-          renderIcon={Launch}
+      {summaryRow && (
+        <div
+          className="sh-overlay"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSummaryRow(null);
+          }}
         >
-          Open Report
-        </Button>
+          <aside className="sh-drawer">
 
-        <Button
-  kind="ghost"
-  size="sm"
-  className="sh-notes-link"
->
-  View Notes
-</Button>
+            {/* Drawer Header */}
+            <div className="sh-drawer-header">
+              <div className="sh-drawer-header__text">
+                <div className="sh-drawer-title">{summaryRow.activity}</div>
+                <div className="sh-drawer-subtitle">SES-MV-IN-001</div>
+              </div>
+              <IconButton
+                kind="ghost"
+                label="Close"
+                size="sm"
+                className="sh-drawer-close"
+                onClick={() => setSummaryRow(null)}
+              >
+                <Close size={16} />
+              </IconButton>
+            </div>
 
-      </div>
+            {/* Session Summary */}
+            <div className="sh-section">
+              <div className="sh-section-title-row">
+                <span className="sh-section-heading">Session Summary</span>
+                <span className="ai-chip">AI</span>
+              </div>
+              <p className="sh-section-content">
+                During this individual counselling session, the student discussed
+                current academic and personal concerns, exploring the thoughts,
+                emotions and experiences contributing to their present challenges.
+                Through guided reflection, the student identified key stressors,
+                strengths and areas requiring support. The session focused on
+                enhancing self awareness, understanding emotional responses, and
+                exploring practical coping strategies. The student actively engaged
+                in the discussion, demonstrated insight into their experiences, and
+                identified actionable steps to support their wellbeing and personal
+                growth. The session concluded with reflections on key takeaways and
+                agreed next steps for continued progress.
+              </p>
+            </div>
 
-    </aside>
-  </div>
-)}
+            {/* Facilitator Guide */}
+            <div className="sh-guide-section">
+              <button
+                className="sh-guide-toggle"
+                onClick={() => setGuideOpen((o) => !o)}
+                aria-expanded={guideOpen}
+              >
+                {guideOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                <span>Facilitator guide</span>
+              </button>
+              {guideOpen && (
+                <ul className="sh-guide-list">
+                  <li>
+                    Helps participants understand and embrace change by identifying
+                    fears, strengths, support systems, and opportunities.
+                  </li>
+                  <li>
+                    Uses interactive activities, self reflection, team collaboration,
+                    and grounding techniques to build self awareness and resilience.
+                  </li>
+                  <li>
+                    Encourages participants to take meaningful actions and
+                    confidently navigate transitions with mindfulness and support.
+                  </li>
+                </ul>
+              )}
+            </div>
+
+            {/* Overview */}
+            <div className="sh-overview-section">
+              <div className="sh-overview-title">Overview</div>
+              <div className="sh-overview-row">
+                <span className="sh-overview-label">Session Date</span>
+                <span className="sh-overview-value">19 May 2026</span>
+              </div>
+              <div className="sh-overview-row">
+                <span className="sh-overview-label">Facilitator</span>
+                <span className="sh-overview-value">Janice Antony</span>
+              </div>
+              <div className="sh-overview-row">
+                <span className="sh-overview-label">Session Type</span>
+                <span className="sh-overview-value">Follow Up</span>
+              </div>
+              <div className="sh-overview-row">
+                <span className="sh-overview-label">Report Status</span>
+                <span className="sh-overview-value sh-overview-value--submitted">
+                  <CheckmarkFilled size={14} className="sh-submitted-icon" />
+                  Submitted
+                </span>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="sh-drawer-footer">
+              <Button kind="primary" renderIcon={Launch} className="sh-open-report-btn">
+                Open Report
+              </Button>
+              <Button kind="ghost" size="sm" className="sh-notes-link">
+                View Notes
+              </Button>
+            </div>
+
+          </aside>
+        </div>
+      )}
     </section>
   );
 }
