@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { Button } from "@carbon/react";
+import QuickSchedulePopup from "../../components/calendar/QuickSchedulePopup";
 import ScheduleDrawer from "../../components/calendar/ScheduleDrawer";
 import SessionCalendar from "../../components/calendar/SessionCalendar";
 import EventPopup from "../../components/calendar/EventPopup";
@@ -17,9 +18,13 @@ function SessionPage() {
     useState(null);
   const [selectedEventAnchorElement, setSelectedEventAnchorElement] =
     useState(null);
+  const [quickPopupOpen, setQuickPopupOpen] = useState(false);
+
   const [drawerOpen, setDrawerOpen] =
   useState(false);
   const [editingSession, setEditingSession] =
+  useState(null);
+  const [selectedSlot, setSelectedSlot] =
   useState(null);
   const [activeTab, setActiveTab] =
   useState("calendar");
@@ -250,13 +255,17 @@ function SessionPage() {
         </div>
 
     {activeTab === "calendar" && (
-  <SessionCalendar
-    sessions={sessions}
-    onEventClick={(event, anchorElement) => {
-      setSelectedEvent(event);
-      setSelectedEventAnchorElement(anchorElement);
-    }}
-  />
+ <SessionCalendar
+  sessions={sessions}
+  onEventClick={(event, anchorElement) => {
+    setSelectedEvent(event);
+    setSelectedEventAnchorElement(anchorElement);
+  }}
+ onSlotClick={(slotInfo) => {
+  setSelectedSlot(slotInfo);
+  setQuickPopupOpen(true);
+}}
+/>
 )}
 
 {activeTab === "history" && (
@@ -311,6 +320,23 @@ function SessionPage() {
       }}
 />
         )}
+        <QuickSchedulePopup
+  open={quickPopupOpen}
+  selectedSlot={selectedSlot}
+  onClose={() => {
+    setQuickPopupOpen(false);
+    setSelectedSlot(null);
+  }}
+  onSave={(newSession) => {
+    setSessions((prev) => [
+      ...prev,
+      newSession,
+    ]);
+
+    setQuickPopupOpen(false);
+    setSelectedSlot(null);
+  }}
+/>
       <EventPopup
         event={selectedEvent}
         anchorElement={selectedEventAnchorElement}

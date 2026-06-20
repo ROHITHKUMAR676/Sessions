@@ -1,71 +1,84 @@
 import { useMemo, useState } from "react";
-import "./SessionHistory.scss";
+
 import {
-  ChevronDown,
-  Download,
-  Filter,
-  Launch,
-  OverflowMenuVertical,
-  Renew,
+  DataTable,
+  Table,
+  TableHead,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableContainer,
   Search,
+  Pagination,
+  Button,
+  IconButton,
+  Select,
+  SelectItem,
+  OverflowMenu,
+  OverflowMenuItem,
+} from "@carbon/react";
+
+import {
+  Renew,
+  Filter,
+  Download,
+  Launch,
+  Bookmark,
 } from "@carbon/icons-react";
 
-const pageSizes = [5, 10, 15];
-const makeSessionCode = (session, index) => {
-  if (index === 0) return "ASN12235BN811V";
+import "./SessionHistory.scss";
 
-  return `ASN${String(session.id).padStart(9, "0")}V`.slice(0, 15);
-};
+const headers = [
+  { key: "activity", header: "Activity" },
+  { key: "sessionId", header: "Session ID" },
+  { key: "date", header: "Date" },
+  { key: "status", header: "Status" },
+  { key: "category", header: "Category" },
+  { key: "type", header: "Type" },
+  { key: "facilitator", header: "Facilitator" },
+  { key: "reportStatus", header: "Report Status" },
+  { key: "actions", header: "" },
+];
 
-const formatSessionDate = (value) => {
-  const date = new Date(
-    String(value || "").includes("T") ? value : `${value}T00:00:00`
+function StatusDot({ color }) {
+  return (
+    <span
+      className="status-dot"
+      style={{ background: color }}
+      aria-hidden="true"
+    />
   );
+}
 
-  if (Number.isNaN(date.getTime())) {
-    return value || "12 Mar 2026";
-  }
-
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(date);
-};
-
-function SessionHistory({ sessions, onDelete, onEdit }) {
+function SessionHistory({ sessions = [], onEdit, onDelete }) {
+  const [search, setSearch] = useState("");
   const [category, setCategory] = useState("Session");
-  const [query, setQuery] = useState("");
-  const [pageSize, setPageSize] = useState(5);
-  const [page, setPage] = useState(1);
   const [summaryRow, setSummaryRow] = useState(null);
-  const [openRowMenu, setOpenRowMenu] = useState(null);
-  const [filterOpen, setFilterOpen] = useState(false);
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
 
-  const historyRows = useMemo(() => {
-    const sourceRows =
+  const rows = useMemo(() => {
+    const source =
       sessions.length > 0
         ? sessions
         : [
             {
-              id: "fallback",
+              id: "1",
               title: "Swithika Aravind - Individual Session",
               start: "2026-03-12",
             },
           ];
 
-    return sourceRows.map((session, index) => ({
-      id: String(session.id),
+    return source.map((item, index) => ({
+      id: String(item.id),
       activity:
         index === 0
           ? "Swithika Aravind - Individual Session"
-          : session.title || "Individual Session",
+          : item.title,
       sessionId:
-        index === 0
-          ? "ASN12235BN811V"
-          : makeSessionCode(session, index),
-      date: index === 0 ? "12 Mar 2026" : formatSessionDate(session.start),
+        index === 0 ? "ASN12235BN811V" : `ASN${item.id}`,
+      date: "12 Mar 2026",
       status: "Completed",
       category: index === 0 ? "Workshop" : "Session",
       type: "Individual",
@@ -74,412 +87,367 @@ function SessionHistory({ sessions, onDelete, onEdit }) {
     }));
   }, [sessions]);
 
-  const filteredRows = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
+  const filteredRows = rows.filter((row) => {
+    const matchesSearch =
+      search.length === 0 ||
+      Object.values(row).some((value) =>
+        String(value).toLowerCase().includes(search.toLowerCase())
+      );
 
-    return historyRows.filter((row) => {
-      const matchesCategory =
-        category === "All" ||
-        category === "Session" ||
-        row.category === category;
-      const matchesQuery =
-        normalizedQuery.length === 0 ||
-        Object.values(row).some((value) =>
-          String(value).toLowerCase().includes(normalizedQuery)
-        );
-      const matchesStatus =
-        statusFilter === "All" || row.status === statusFilter;
+    const matchesCategory =
+      category === "All" ||
+      row.category === category ||
+      category === "Session";
 
-      return matchesCategory && matchesQuery && matchesStatus;
-    });
-  }, [category, historyRows, query, statusFilter]);
+    return matchesSearch && matchesCategory;
+  });
 
-  const totalPages = Math.max(1, Math.ceil(filteredRows.length / pageSize));
-  const currentPage = Math.min(page, totalPages);
-  const pageStart = (currentPage - 1) * pageSize;
-  const visibleRows = filteredRows.slice(pageStart, pageStart + pageSize);
-
-  const handlePageSizeChange = (event) => {
-    setPageSize(Number(event.target.value));
-    setPage(1);
-  };
+  const start = (page - 1) * pageSize;
+  const paginatedRows = filteredRows.slice(start, start + pageSize);
 
   const refreshHistory = () => {
+    setSearch("");
     setCategory("Session");
-    setQuery("");
-    setStatusFilter("All");
-    setFilterOpen(false);
-    setOpenRowMenu(null);
     setPage(1);
   };
 
   const downloadHistory = () => {
-    const headers = [
-      "Activity",
-      "Session ID",
-      "Date",
-      "Status",
-      "Category",
-      "Type",
-      "Facilitator",
-      "Report Status",
-    ];
-    const csvRows = filteredRows.map((row) =>
-      [
-        row.activity,
-        row.sessionId,
-        row.date,
-        row.status,
-        row.category,
-        row.type,
-        row.facilitator,
-        row.reportStatus,
-      ]
-        .map((value) => `"${String(value).replaceAll('"', '""')}"`)
-        .join(",")
-    );
-    const blob = new Blob([[headers.join(","), ...csvRows].join("\n")], {
-      type: "text/csv;charset=utf-8",
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-
-    link.href = url;
-    link.download = "session-history.csv";
-    link.click();
-    URL.revokeObjectURL(url);
+    console.log("download csv");
   };
 
   return (
-    <section className="session-history-shell">
-      <div className="session-history-panel">
-        <div className="session-history-intro">
-          <div>
-            <h2>View Session History</h2>
-            <p>
+    <section className="sh-shell">
+      <div className="sh-panel">
+
+        {/* ── HEADER ── */}
+        <div className="sh-intro">
+          <div className="sh-intro__text">
+            <h2 className="sh-intro__title">View Session History</h2>
+            <p className="sh-intro__desc">
               View a complete timeline of counselling sessions, assessments,
-              referrals, follow ups, workshops, and other wellbeing activities
+              referrals, follow ups, workshops and wellbeing activities
               associated with the student.
             </p>
           </div>
-          <button className="history-close-button" type="button" aria-label="Close">
-            x
+          <button className="sh-close-btn" type="button" aria-label="Close">
+            ×
           </button>
         </div>
 
-        <div className="history-table-frame">
-          <div className="history-toolbar">
-            <label className="category-select">
-              <span>Category</span>
-              <select
-                value={category}
-                onChange={(event) => {
-                  setCategory(event.target.value);
-                  setPage(1);
-                }}
-                aria-label="Category"
-              >
-                <option>Session</option>
-                <option>All</option>
-                <option>Workshop</option>
-                <option>Assessment</option>
-              </select>
-              <ChevronDown size={16} />
-            </label>
-
-            <label className="history-search">
-              <Search size={16} />
-              <input
-                value={query}
-                onChange={(event) => {
-                  setQuery(event.target.value);
-                  setPage(1);
-                }}
-                placeholder="Search assessments, sessions, notes, or activities"
-                type="search"
-              />
-            </label>
-
-            <div className="history-toolbar-icons" aria-label="Table tools">
-              <button type="button" aria-label="Refresh" onClick={refreshHistory}>
-                <Renew size={16} />
-              </button>
-              <button
-                type="button"
-                aria-label="Filter"
-                onClick={() => setFilterOpen((value) => !value)}
-              >
-                <Filter size={16} />
-              </button>
-              <button type="button" aria-label="Download" onClick={downloadHistory}>
-                <Download size={16} />
-              </button>
-            </div>
-
-            <label className="actions-select">
-              <select aria-label="Actions" defaultValue="Actions">
-                <option>Actions</option>
-                <option>Export</option>
-                <option>Delete selected</option>
-              </select>
-              <ChevronDown size={16} />
-            </label>
+        {/* ── TOOLBAR ── */}
+        <div className="sh-toolbar">
+          {/* Category inline select */}
+          <div className="sh-toolbar__category">
+            <span className="sh-toolbar__category-label">Category</span>
+            <Select
+              id="sh-category"
+              labelText=""
+              hideLabel
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="sh-category-select"
+            >
+              <SelectItem value="Session" text="Session" />
+              <SelectItem value="Workshop" text="Workshop" />
+              <SelectItem value="Assessment" text="Assessment" />
+              <SelectItem value="All" text="All" />
+            </Select>
           </div>
 
-          {filterOpen && (
-            <div className="history-filter-bar">
-              <label>
-                Status
-                <select
-                  value={statusFilter}
-                  onChange={(event) => {
-                    setStatusFilter(event.target.value);
-                    setPage(1);
-                  }}
-                >
-                  <option>All</option>
-                  <option>Completed</option>
-                </select>
-              </label>
-              <label>
-                Category
-                <select
-                  value={category}
-                  onChange={(event) => {
-                    setCategory(event.target.value);
-                    setPage(1);
-                  }}
-                >
-                  <option>Session</option>
-                  <option>All</option>
-                  <option>Workshop</option>
-                  <option>Assessment</option>
-                </select>
-              </label>
-            </div>
-          )}
+          {/* Search */}
+          <div className="sh-toolbar__search">
+            <Search
+              size="sm"
+              labelText="Search"
+              placeholder="Search assessments, sessions, notes, or activities"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
 
-          <div className="history-table-scroll">
-            <table className="history-table">
-              <thead>
-                <tr>
-                  <th>Activity</th>
-                  <th>Session ID</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                  <th>Category</th>
-                  <th>Type</th>
-                  <th>Facilitator</th>
-                  <th>Report Status</th>
-                  <th aria-label="Row actions" />
-                </tr>
-              </thead>
-              <tbody>
-                {visibleRows.map((row) => (
-                  <tr key={row.id}>
-                    <td>
-                      <button
-                        className="activity-link"
-                        type="button"
-                        onClick={() => setSummaryRow(row)}
+          {/* Icon actions */}
+          <div className="sh-toolbar__icons">
+            <IconButton
+              kind="ghost"
+              label="Save"
+              size="sm"
+            >
+              <Bookmark />
+            </IconButton>
+            <IconButton
+              kind="ghost"
+              label="Filter"
+              size="sm"
+            >
+              <Filter />
+            </IconButton>
+            <IconButton
+              kind="ghost"
+              label="Download"
+              size="sm"
+              onClick={downloadHistory}
+            >
+              <Download />
+            </IconButton>
+          </div>
+
+          {/* Actions overflow styled as dark button */}
+          <OverflowMenu
+            ariaLabel="Actions"
+            flipped
+            renderIcon={() => null}
+            className="sh-actions-btn"
+            menuOptionsClass="sh-actions-menu"
+          >
+            <OverflowMenuItem
+              itemText="Refresh"
+              onClick={refreshHistory}
+            />
+            <OverflowMenuItem itemText="Export" />
+            <OverflowMenuItem itemText="Delete Selected" isDelete />
+          </OverflowMenu>
+        </div>
+
+        {/* ── TABLE ── */}
+        <TableContainer className="sh-table-container">
+          <DataTable rows={paginatedRows} headers={headers}>
+            {({
+              rows,
+              headers,
+              getTableProps,
+              getHeaderProps,
+              getRowProps,
+            }) => (
+              <Table {...getTableProps()} size="md">
+                <TableHead>
+                  <TableRow>
+                    {headers.map((header) => (
+                      <TableHeader
+                        key={header.key}
+                        {...getHeaderProps({ header })}
                       >
-                        {row.activity}
-                      </button>
-                    </td>
-                    <td>{row.sessionId}</td>
-                    <td>{row.date}</td>
-                    <td>
-                      <span className="status-pill status-completed">
-                        <span className="status-dot" />
-                        {row.status}
-                      </span>
-                    </td>
-                    <td>{row.category}</td>
-                    <td>{row.type}</td>
-                    <td>{row.facilitator}</td>
-                    <td>
-                      <span className="status-pill report-pending">
-                        <span className="status-dot" />
-                        {row.reportStatus}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="history-row-actions">
-                        <button
-                          className="row-menu-button"
-                          type="button"
-                          aria-label={`Open actions for ${row.activity}`}
-                          onClick={() =>
-                            setOpenRowMenu((value) =>
-                              value === row.id ? null : row.id
-                            )
-                          }
-                        >
-                          <OverflowMenuVertical size={16} />
-                        </button>
-                        {openRowMenu === row.id && (
-                          <div className="history-row-menu">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                onEdit?.(row.id);
-                                setOpenRowMenu(null);
-                              }}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              type="button"
-                              className="danger"
-                              onClick={() => {
-                                if (row.id !== "fallback") {
-                                  onDelete?.(Number(row.id));
+                        {header.header}
+                      </TableHeader>
+                    ))}
+                  </TableRow>
+                </TableHead>
+
+                <TableBody>
+                  {rows.map((row) => (
+                    <TableRow key={row.id} {...getRowProps({ row })}>
+                      {row.cells.map((cell) => {
+
+                        /* Activity – blue link */
+                        if (cell.info.header === "activity") {
+                          return (
+                            <TableCell key={cell.id}>
+                              <button
+                                className="sh-activity-link"
+                                onClick={() =>
+                                  setSummaryRow(
+                                    paginatedRows.find((r) => r.id === row.id)
+                                  )
                                 }
-                                setOpenRowMenu(null);
-                              }}
-                            >
-                              Delete app
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {visibleRows.length === 0 && (
-                  <tr>
-                    <td className="empty-row" colSpan="9">
-                      No sessions found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                              >
+                                {cell.value}
+                              </button>
+                            </TableCell>
+                          );
+                        }
+
+                        /* Status – green dot + text */
+                        if (cell.info.header === "status") {
+                          return (
+                            <TableCell key={cell.id}>
+                              <span className="sh-status sh-status--completed">
+                                <StatusDot color="#24a148" />
+                                Completed
+                              </span>
+                            </TableCell>
+                          );
+                        }
+
+                        /* Report Status – gray dot + text */
+                        if (cell.info.header === "reportStatus") {
+                          return (
+                            <TableCell key={cell.id}>
+                              <span className="sh-status sh-status--pending">
+                                <StatusDot color="#8d8d8d" />
+                                Pending
+                              </span>
+                            </TableCell>
+                          );
+                        }
+
+                        /* Row overflow menu */
+                        if (cell.info.header === "actions") {
+                          return (
+                            <TableCell key={cell.id} className="sh-actions-cell">
+                              <OverflowMenu flipped size="sm">
+                                <OverflowMenuItem
+                                  itemText="Edit"
+                                  onClick={() => onEdit?.(row.id)}
+                                />
+                                <OverflowMenuItem
+                                  itemText="Delete"
+                                  isDelete
+                                  onClick={() => onDelete?.(row.id)}
+                                />
+                              </OverflowMenu>
+                            </TableCell>
+                          );
+                        }
+
+                        return (
+                          <TableCell key={cell.id}>{cell.value}</TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </DataTable>
+        </TableContainer>
+
+        {/* ── PAGINATION ── */}
+        <Pagination
+          page={page}
+          pageSize={pageSize}
+          pageSizes={[5, 10, 15]}
+          totalItems={filteredRows.length}
+          onChange={({ page, pageSize }) => {
+            setPage(page);
+            setPageSize(pageSize);
+          }}
+        />
+      </div>
+
+      {/* ── SUMMARY DRAWER ── */}
+      {/* ── SUMMARY DRAWER ── */}
+{summaryRow && (
+  <div
+    className="sh-overlay"
+    onClick={(e) => {
+      if (e.target === e.currentTarget) {
+        setSummaryRow(null);
+      }
+    }}
+  >
+    <aside className="sh-drawer">
+
+      <div className="sh-drawer-header">
+        <div>
+          <div className="sh-drawer-title">
+            {summaryRow.activity}
           </div>
 
-          <div className="history-pagination">
-            <label>
-              Items per page:
-              <select value={pageSize} onChange={handlePageSizeChange}>
-                {pageSizes.map((size) => (
-                  <option key={size} value={size}>
-                    {size}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown size={14} />
-            </label>
-
-            <span>
-              {filteredRows.length === 0 ? 0 : pageStart + 1}-
-              {Math.min(pageStart + pageSize, filteredRows.length)} of{" "}
-              {filteredRows.length} items
-            </span>
-
-            <div className="history-page-select">
-              <select
-                value={currentPage}
-                onChange={(event) => setPage(Number(event.target.value))}
-              >
-                {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-                  (pageNumber) => (
-                    <option key={pageNumber} value={pageNumber}>
-                      {pageNumber}
-                    </option>
-                  )
-                )}
-              </select>
-              <ChevronDown size={14} />
-              <span>of {totalPages} pages</span>
-            </div>
-
-            <button
-              type="button"
-              aria-label="Previous page"
-              disabled={currentPage === 1}
-              onClick={() => setPage((value) => Math.max(1, value - 1))}
-            >
-              <ChevronDown className="previous-icon" size={16} />
-            </button>
-            <button
-              type="button"
-              aria-label="Next page"
-              disabled={currentPage === totalPages}
-              onClick={() => setPage((value) => Math.min(totalPages, value + 1))}
-            >
-              <ChevronDown className="next-icon" size={16} />
-            </button>
+          <div className="sh-drawer-subtitle">
+            ASN12235BN811V · 12 Mar 2026 · Saranya LK
           </div>
+        </div>
+
+        <button
+          className="sh-drawer-close"
+          onClick={() => setSummaryRow(null)}
+        >
+          ×
+        </button>
+      </div>
+
+      <div className="sh-section">
+        <div className="sh-section-title-row">
+          <span>Session Summary</span>
+          <span className="ai-chip">AI</span>
+        </div>
+
+        <div className="sh-section-content">
+          During this individual counselling session,
+          the student discussed current academic and
+          personal concerns, exploring thoughts,
+          emotions and experiences contributing to
+          their present challenges. Through guided
+          reflection, the student identified key
+          stressors, strengths and areas requiring
+          support.
         </div>
       </div>
-      {summaryRow && (
-        <div className="summary-drawer-overlay">
-          <aside className="summary-drawer" aria-label="Session summary">
-            <header>
-              <div>
-                <h2>{summaryRow.activity}</h2>
-                <p>SES-MY-IN-001</p>
-              </div>
-              <button type="button" aria-label="Close" onClick={() => setSummaryRow(null)}>
-                x
-              </button>
-            </header>
 
-            <section className="summary-section primary-summary">
-              <div className="summary-title-row">
-                <h3>Session Summary</h3>
-                <span>AI</span>
-              </div>
-              <p>
-                During this individual counselling session, the student discussed
-                current academic and personal concerns, exploring the thoughts,
-                emotions, and experiences contributing to their present
-                challenges. Through guided reflection, the student identified key
-                stressors, personal strengths, and areas requiring support.
-              </p>
-            </section>
-
-            <section className="summary-section facilitator-guide">
-              <h3>Facilitator guide</h3>
-              <ul>
-                <li>Helps participants understand and embrace change by identifying fears, strengths, support systems, and opportunities.</li>
-                <li>Uses interactive activities, self reflection, team collaboration, and grounding techniques.</li>
-                <li>Encourages participants to take meaningful actions with confidence.</li>
-              </ul>
-            </section>
-
-            <section className="summary-section overview-list">
-              <h3>Overview</h3>
-              <dl>
-                <div>
-                  <dt>Session Date</dt>
-                  <dd>19 May 2026</dd>
-                </div>
-                <div>
-                  <dt>Facilitator</dt>
-                  <dd>Janice Antony</dd>
-                </div>
-                <div>
-                  <dt>Session Type</dt>
-                  <dd>Follow Up</dd>
-                </div>
-                <div>
-                  <dt>Report Status</dt>
-                  <dd><span className="submitted-dot" />Submitted</dd>
-                </div>
-              </dl>
-            </section>
-
-            <div className="summary-actions">
-              <button type="button">
-                Open Report
-                <Launch size={16} />
-              </button>
-              <button type="button">View Notes</button>
-            </div>
-          </aside>
+      <div className="sh-guide-section">
+        <div className="sh-guide-title">
+          Facilitator Guide
         </div>
-      )}
+
+        <ul>
+          <li>
+            Helps participants understand and embrace
+            change by identifying fears and strengths.
+          </li>
+
+          <li>
+            Uses reflective activities and self
+            reflection.
+          </li>
+
+          <li>
+            Encourages participants to take meaningful
+            actions confidently.
+          </li>
+        </ul>
+      </div>
+
+      <div className="sh-overview-section">
+
+        <div className="sh-overview-title">
+          Overview
+        </div>
+
+        <div className="sh-overview-row">
+          <span>Session Date</span>
+          <span>19 May 2026</span>
+        </div>
+
+        <div className="sh-overview-row">
+          <span>Facilitator</span>
+          <span>Janice Antony</span>
+        </div>
+
+        <div className="sh-overview-row">
+          <span>Session Type</span>
+          <span>Follow Up</span>
+        </div>
+
+        <div className="sh-overview-row">
+          <span>Report Status</span>
+
+          <span className="submitted-status">
+            ● Submitted
+          </span>
+        </div>
+
+      </div>
+
+      <div className="sh-drawer-footer">
+
+        <Button
+          kind="primary"
+          renderIcon={Launch}
+        >
+          Open Report
+        </Button>
+
+        <button
+          className="sh-notes-link"
+          type="button"
+        >
+          View Notes
+        </button>
+
+      </div>
+
+    </aside>
+  </div>
+)}
     </section>
   );
 }

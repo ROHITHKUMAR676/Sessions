@@ -25,7 +25,8 @@ function FullCalendarView({
   currentView,
   events,
   onEventClick,
-}) {
+  onSlotClick,
+}){
   const dateKeyFormatter = new Intl.DateTimeFormat("en-CA");
   const weekdayFormatter = new Intl.DateTimeFormat("en-US", { weekday: "long" });
   const monthFormatter = new Intl.DateTimeFormat("en-US", { month: "short" });
@@ -99,60 +100,68 @@ function FullCalendarView({
   return (
     <div className={`full-calendar-surface ${currentView === "listWeek" ? "schedule-view-active" : ""}`}>
       <FullCalendar
-        ref={calendarRef}
-        plugins={[
-          dayGridPlugin,
-          timeGridPlugin,
-          listPlugin,
-          interactionPlugin,
-        ]}
-        initialView="dayGridMonth"
-        initialDate="2026-06-13"
-        headerToolbar={false}
-        events={events}
-        height="690px"
-        slotMinTime="07:00:00"
-        slotMaxTime="25:00:00"
-        slotDuration="01:00:00"
-        slotLabelFormat={{
-          hour: "numeric",
-          meridiem: "short",
-        }}
-        allDaySlot={false}
-        nowIndicator
-        dayMaxEventRows={3}
-        eventDisplay="block"
-        displayEventTime={false}
-        dayHeaderFormat={{ weekday: "long" }}
-        dayHeaderContent={renderDayHeader}
-        eventTimeFormat={{
-          hour: "numeric",
-          meridiem: "short",
-        }}
-        listDayFormat={{
-          weekday: "long",
-          day: "numeric",
-        }}
-        listDaySideFormat={{
-          month: "short",
-        }}
-        eventContent={(info) => (
-          <Tag
-            size="sm"
-            type={getEventTagType(info.event)}
-            className="calendar-event-pill"
-            style={{
-              backgroundColor: info.event.backgroundColor,
-              color: info.event.textColor,
-            }}
-          >
-            {info.event.title}
-          </Tag>
-        )}
-        eventClick={(info) => {
-          onEventClick(info.event, info.el);
-        }}
-      />
+  ref={calendarRef}
+  plugins={[
+    dayGridPlugin,
+    timeGridPlugin,
+    listPlugin,
+    interactionPlugin,
+  ]}
+  initialView="dayGridMonth"
+  initialDate="2026-06-13"
+  headerToolbar={false}
+  events={events}
+  selectable={true}
+  height="690px"
+
+  dateClick={(info) => {
+    onSlotClick?.({
+      start: info.dateStr,
+    });
+  }}
+
+  slotMinTime="07:00:00"
+  slotMaxTime="25:00:00"
+  slotDuration="01:00:00"
+  slotLabelFormat={{
+    hour: "numeric",
+    meridiem: "short",
+  }}
+  allDaySlot={false}
+  nowIndicator
+  dayMaxEventRows={3}
+  eventDisplay="block"
+  displayEventTime={false}
+  dayHeaderFormat={{ weekday: "long" }}
+  dayHeaderContent={renderDayHeader}
+  eventTimeFormat={{
+    hour: "numeric",
+    meridiem: "short",
+  }}
+  listDayFormat={{
+    weekday: "long",
+    day: "numeric",
+  }}
+  listDaySideFormat={{
+    month: "short",
+  }}
+  eventContent={(info) => (
+    <Tag
+      size="sm"
+      type={getEventTagType(info.event)}
+      className="calendar-event-pill"
+      style={{
+        backgroundColor: info.event.backgroundColor,
+        color: info.event.textColor,
+      }}
+    >
+      {info.event.title}
+    </Tag>
+  )}
+  eventClick={(info) => {
+    onEventClick(info.event, info.el);
+  }}
+/>
 
       {currentView === "listWeek" && (
         <div className="custom-schedule-view" aria-label={`Schedules for ${calendarTitle}`}>

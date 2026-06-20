@@ -8,6 +8,7 @@ import CalendarToolbar from "./CalendarToolbar";
 function SessionCalendar({
   sessions,
   onEventClick,
+  onSlotClick,
 }) {
   const calendarRef = useRef(null);
   const [filters, setFilters] = useState({
@@ -84,12 +85,13 @@ function SessionCalendar({
         />
 
         <FullCalendarView
-          calendarRef={calendarRef}
-          calendarTitle={calendarTitle}
-          events={visibleSessions}
-          currentView={currentView}
-          onEventClick={onEventClick}
-        />
+  calendarRef={calendarRef}
+  calendarTitle={calendarTitle}
+  events={visibleSessions}
+  currentView={currentView}
+  onEventClick={onEventClick}
+  onSlotClick={onSlotClick}
+/>
       </div>
     </div>
   );

@@ -1,0 +1,248 @@
+.quick-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: rgba(22, 22, 22, 0.35);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.quick-popup {
+  width: 280px;
+  background: #ffffff;
+  border: 1px solid #c6c6c6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
+  overflow: hidden;
+}
+
+/* =========================
+   HEADER
+   ========================= */
+
+.quick-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  padding: 16px 12px 0 16px;
+}
+
+/* Tabs sit at their natural width, they should not stretch full width */
+.quick-tabs {
+  width: fit-content;
+}
+
+.quick-tabs .cds--tabs {
+  width: fit-content;
+}
+
+.quick-tabs .cds--tab-list {
+  border: 1px solid #8d8d8d;
+  min-height: 32px;
+}
+
+.quick-tabs .cds--tab {
+  min-height: 32px;
+  background: #ffffff;
+  border-right: 1px solid #8d8d8d;
+  font-size: 12px;
+  padding: 0 12px;
+}
+
+.quick-tabs .cds--tab:last-child {
+  border-right: none;
+}
+
+.quick-tabs .cds--tab--selected,
+.quick-tabs .cds--tab--selected:hover {
+  background: #393939 !important;
+  color: #ffffff !important;
+}
+
+.quick-tabs .cds--tab--selected::after {
+  display: none;
+}
+
+.popup-close-btn {
+  width: 32px !important;
+  min-height: 32px !important;
+  flex-shrink: 0;
+}
+
+/* =========================
+   BODY
+   ========================= */
+
+.quick-popup-body {
+  padding: 16px;
+}
+
+.quick-popup-body .cds--text-input-wrapper {
+  width: 100%;
+}
+
+.quick-popup-body .cds--text-input {
+  min-height: 32px;
+  font-size: 12px;
+}
+
+.quick-popup-body .cds--label {
+  font-size: 12px;
+  color: #525252;
+  margin-bottom: 4px;
+}
+
+.quick-popup-body .cds--select {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.quick-popup-body .cds--select-input {
+  min-height: 32px;
+  font-size: 14px;
+  color: #161616;
+}
+
+/* =========================
+   DATE + TIME ROW
+   ========================= */
+
+.quick-date-time-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.date-field {
+  flex: 1.3;
+}
+
+.date-field .cds--date-picker-container,
+.date-field .cds--date-picker__input {
+  width: 100%;
+}
+
+/* Carbon places the calendar icon on the right by default;
+   move it to the left to match the design and make room for it */
+.date-field .cds--date-picker__icon {
+  left: 8px;
+  right: auto;
+}
+
+.date-field .cds--date-picker__input {
+  padding-left: 28px;
+  font-size: 12px;
+}
+
+.time-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.time-field-label {
+  font-size: 12px;
+  color: #525252;
+  margin-bottom: 4px;
+}
+
+.time-field-inputs {
+  display: flex;
+  gap: 8px;
+}
+
+.time-field-inputs .cds--time-picker {
+  flex: 1;
+  width: auto;
+}
+
+.time-field-inputs .cds--time-picker__input,
+.time-field-inputs .cds--time-picker__input-field {
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+}
+
+/* The visible label lives in .time-field-label, hide Carbon's own label
+   on each TimePicker so it doesn't duplicate "Start time" / "End time" */
+.time-field-inputs .cds--label {
+  display: none;
+}
+
+/* =========================
+   NOTES
+   ========================= */
+
+.notes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-top: 16px;
+  margin-bottom: 4px;
+
+  font-size: 12px;
+  color: #525252;
+}
+
+.quick-popup-body .cds--text-area {
+  min-height: 64px;
+  resize: vertical;
+  font-size: 12px;
+  border: 1px solid #8d8d8d;
+  background: #ffffff;
+}
+
+/* =========================
+   FOOTER
+   ========================= */
+
+.quick-popup-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 4px;
+}
+
+.quick-popup-footer .cds--btn {
+  width: 100%;
+  max-width: none;
+  min-height: 48px;
+  justify-content: flex-start;
+  padding-left: 16px;
+}
+
+.quick-popup-footer .cds--btn--secondary {
+  background: #393939;
+}
+
+.quick-popup-footer .cds--btn--secondary:hover {
+  background: #525252;
+}
+
+.quick-popup-footer .cds--btn--primary {
+  background: #0f62fe;
+}
+
+.quick-popup-footer .cds--btn--primary:hover {
+  background: #0353e9;
+}
+
+/* =========================
+   SMALL CARBON FIXES
+   ========================= */
+
+.quick-popup .cds--select-input__wrapper svg {
+  right: 8px;
+}
+
+.quick-popup .cds--time-picker__input-field::placeholder,
+.quick-popup .cds--text-input::placeholder,
+.quick-popup .cds--text-area::placeholder,
+.quick-popup .cds--date-picker__input::placeholder {
+  font-size: 12px;
+  color: #a8a8a8;
+}

@@ -5,7 +5,6 @@ import {
   OverflowMenu,
   OverflowMenuItem,
   Tag,
-  Tile,
 } from "@carbon/react";
 import {
   Close,
@@ -16,30 +15,33 @@ import {
 import { createPortal } from "react-dom";
 import "./EventPopup.scss";
 
-const getPopupPosition = (anchorElement) => {
-  if (!anchorElement || typeof window === "undefined") {
-    return undefined;
-  }
+// ─── Position helper ──────────────────────────────────────────────────────────
 
-  const anchorRect = anchorElement.getBoundingClientRect();
-  const popupWidth = 320;
-  const gutter = 12;
-  const popupHeight = 460;
-  const top = Math.max(
+const getPopupPosition = (anchorEl) => {
+  if (!anchorEl || typeof window === "undefined") return null;
+
+  const rect = anchorEl.getBoundingClientRect();
+  const popupW = 340;
+  const popupH = 420;
+  const gutter = 10;
+  const winW = window.innerWidth;
+  const winH = window.innerHeight;
+
+  // Prefer right side, fall back to left
+  let left =
+    rect.right + gutter + popupW <= winW - gutter
+      ? rect.right + gutter
+      : Math.max(gutter, rect.left - popupW - gutter);
+
+  let top = Math.max(
     gutter,
-    Math.min(anchorRect.top, window.innerHeight - popupHeight - gutter)
+    Math.min(rect.top, winH - popupH - gutter)
   );
-  const availableRight = window.innerWidth - anchorRect.right;
-  const left =
-    availableRight >= popupWidth + gutter
-      ? anchorRect.right + gutter
-      : Math.max(gutter, anchorRect.left - popupWidth - gutter);
 
-  return {
-    top: `${top}px`,
-    left: `${left}px`,
-  };
+  return { top: `${top}px`, left: `${left}px` };
 };
+
+// ─── Time formatter ───────────────────────────────────────────────────────────
 
 const formatTimeRange = (event) => {
   const start = event?.start ? new Date(event.start) : null;
@@ -53,10 +55,12 @@ const formatTimeRange = (event) => {
     month: "short",
     year: "numeric",
   }).format(start);
+
   const startTime = new Intl.DateTimeFormat("en-US", {
     hour: "numeric",
     minute: "2-digit",
   }).format(start);
+
   const endTime =
     end && !Number.isNaN(end.getTime())
       ? new Intl.DateTimeFormat("en-US", {
@@ -65,36 +69,55 @@ const formatTimeRange = (event) => {
         }).format(end)
       : "1:00 PM";
 
-  return `${date} - ${startTime}-${endTime}`;
+  return `${date} · ${startTime}–${endTime}`;
 };
 
+// ─── Avatar ───────────────────────────────────────────────────────────────────
+
+function Avatar({ name, photo }) {
+  if (photo) {
+    return (
+      <span className="ep-avatar ep-avatar--photo">
+        <img src={photo} alt={name} />
+      </span>
+    );
+  }
+  const initials = name
+    .split(" ")
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+  return <span className="ep-avatar ep-avatar--initials">{initials}</span>;
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
 function EventPopup({ event, anchorElement, onClose, onDelete, onEdit, onJoin }) {
-  const [popupPosition, setPopupPosition] = useState(() =>
-    getPopupPosition(anchorElement)
-  );
+  const [pos, setPos] = useState(() => getPopupPosition(anchorElement));
 
   useEffect(() => {
     if (!event || !anchorElement) {
-      setPopupPosition(undefined);
-      return undefined;
+      setPos(null);
+      return;
     }
 
     let frameId = 0;
-    const updatePosition = () => {
+    const update = () => {
       window.cancelAnimationFrame(frameId);
-      frameId = window.requestAnimationFrame(() => {
-        setPopupPosition(getPopupPosition(anchorElement));
-      });
+      frameId = window.requestAnimationFrame(() =>
+        setPos(getPopupPosition(anchorElement))
+      );
     };
 
-    updatePosition();
-    window.addEventListener("scroll", updatePosition, true);
-    window.addEventListener("resize", updatePosition);
+    update();
+    window.addEventListener("scroll", update, true);
+    window.addEventListener("resize", update);
 
     return () => {
       window.cancelAnimationFrame(frameId);
-      window.removeEventListener("scroll", updatePosition, true);
-      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", update, true);
+      window.removeEventListener("resize", update);
     };
   }, [event, anchorElement]);
 
@@ -102,98 +125,130 @@ function EventPopup({ event, anchorElement, onClose, onDelete, onEdit, onJoin })
 
   const props = event.extendedProps || {};
   const eventId = event.id || event._def?.publicId;
+  const sessionType = props.sessionType || "Individual Session";
+
   const participants =
     props.participants?.length > 0
       ? props.participants
       : ["Saranya Loganathan", "William Christopher"];
 
-  const popup = (
-    <Tile
-      className="event-popover"
-      role="dialog"
-      aria-label={event.title}
-      style={popupPosition}
-    >
-      <div className="event-popover-top">
-        <Tag type="blue" size="sm">
-          {props.sessionType || "Individual Session"}
-        </Tag>
-        <div className="event-top-actions">
-          <OverflowMenu
-            aria-label="Event actions"
-            direction="bottom"
-            flipped
-            iconDescription="Event actions"
-            renderIcon={OverflowMenuVertical}
-            size="sm"
-          >
-            <OverflowMenuItem
-              itemText="Edit"
-              onClick={() => onEdit?.(eventId)}
-            />
-            <OverflowMenuItem
-              hasDivider
-              isDelete
-              itemText="Delete app"
-              onClick={() => onDelete?.(eventId)}
-            />
-          </OverflowMenu>
+  // Tag color by session type
+  const tagType = (() => {
+    if (sessionType === "Workshop" || sessionType === "Group Session")
+      return "purple";
+    if (sessionType === "Staff Training") return "green";
+    return "blue";
+  })();
 
+  const popup = (
+    <>
+      {/* Backdrop – clicking outside closes */}
+      <div
+        className="ep-backdrop"
+        role="presentation"
+        onClick={onClose}
+      />
+
+      <div
+        className="ep-popup"
+        role="dialog"
+        aria-modal="true"
+        aria-label={event.title}
+        style={pos || { top: "20%", left: "50%", transform: "translateX(-50%)" }}
+      >
+        {/* ── Header row ── */}
+        <div className="ep-header">
+          <Tag type={tagType} size="sm" className="ep-session-tag">
+            {sessionType}
+          </Tag>
+
+          <div className="ep-header-actions">
+            <OverflowMenu
+              ariaLabel="More options"
+              direction="bottom"
+              flipped
+              renderIcon={OverflowMenuVertical}
+              size="sm"
+              iconDescription="More options"
+            >
+              <OverflowMenuItem
+                itemText="Edit"
+                onClick={() => onEdit?.(eventId)}
+              />
+              <OverflowMenuItem
+                hasDivider
+                isDelete
+                itemText="Delete"
+                onClick={() => onDelete?.(eventId)}
+              />
+            </OverflowMenu>
+
+            <IconButton
+              kind="ghost"
+              label="Close"
+              size="sm"
+              onClick={onClose}
+            >
+              <Close />
+            </IconButton>
+          </div>
+        </div>
+
+        {/* ── Title & date ── */}
+        <h3 className="ep-title">
+          {props.description || event.title}
+        </h3>
+        <p className="ep-date">{formatTimeRange(event)}</p>
+
+        {/* ── Join + Copy ── */}
+        <div className="ep-cta-row">
+          <Button
+            kind="primary"
+            renderIcon={Launch}
+            size="md"
+            className="ep-join-btn"
+            onClick={onJoin}
+          >
+            Join Meeting
+          </Button>
           <IconButton
             kind="ghost"
-            label="Close"
-            size="sm"
-            onClick={onClose}
+            label="Copy meeting link"
+            size="md"
+            className="ep-copy-btn"
           >
-            <Close />
+            <Copy />
           </IconButton>
         </div>
-      </div>
 
-      <h3>{props.description || event.title}</h3>
-      <p className="event-date">{formatTimeRange(event)}</p>
-
-      <div className="event-actions-row">
-        <Button
-          kind="primary"
-          className="join-meeting-button"
-          renderIcon={Launch}
-          size="md"
-          onClick={onJoin}
-        >
-          Join Meeting
-        </Button>
-        <IconButton
-          kind="ghost"
-          className="copy-button"
-          label="Copy meeting link"
-          size="md"
-        >
-          <Copy />
-        </IconButton>
-      </div>
-
-      <div className="participants-block">
-        <h4>Participants</h4>
-        {participants.slice(0, 2).map((participant, index) => (
-          <div className="participant-row" key={participant}>
-            <span className={index === 0 ? "avatar-photo" : "avatar-initials"}>
-              {index === 0 ? "" : "WC"}
-            </span>
-            <div>
-              <small>{index === 0 ? "Psychologist | PSY-DR34M" : "Participant | STU-X097P"}</small>
-              <strong>{participant}</strong>
-            </div>
+        {/* ── Participants ── */}
+        <div className="ep-participants">
+          <div className="ep-participants-header">
+            <span className="ep-participants-title">Participants</span>
           </div>
-        ))}
+
+          {participants.slice(0, 2).map((name, idx) => (
+            <div className="ep-participant-row" key={name}>
+              <Avatar
+                name={name}
+                photo={idx === 0 ? undefined : undefined}
+              />
+              <div className="ep-participant-info">
+                <small className="ep-participant-role">
+                  {idx === 0
+                    ? `Psychologist | PSY-DR34M`
+                    : `Participant | STU-X097P`}
+                </small>
+                <strong className="ep-participant-name">{name}</strong>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-    </Tile>
+    </>
   );
 
-  if (typeof document === "undefined") {
-    return popup;
-  }
-
+  if (typeof document === "undefined") return popup;
   return createPortal(popup, document.body);
 }
 
