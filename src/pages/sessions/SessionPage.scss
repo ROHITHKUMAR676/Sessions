@@ -74,13 +74,13 @@
   max-width: 220px;
   height: 44px;
   padding: 0 24px;
-  border: 1px solid #c6c6c6;
+  
   border-bottom: none;
   border-radius: 0;        /* ← removed rounded corners */
   background: #e0e0e0;
   color: #525252;
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 600;
   margin-right: 0;         /* ← removed gap between tabs */
   position: relative;
   top: 2px;
@@ -190,4 +190,8 @@
     padding: 13px 14px;
     text-align: center;
   }
+}
+.session-tabs .cds--tabs__nav-item--selected .cds--tabs__nav-link {
+  font-weight: 700 !important;
+  color: #161616 !important;
 }
