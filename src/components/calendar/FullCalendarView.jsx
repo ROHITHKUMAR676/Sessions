@@ -26,6 +26,7 @@ function FullCalendarView({
   events,
   onEventClick,
   onSlotClick,
+  onDoubleSlotClick,
 }){
   const dateKeyFormatter = new Intl.DateTimeFormat("en-CA");
   const weekdayFormatter = new Intl.DateTimeFormat("en-US", { weekday: "long" });
@@ -96,7 +97,7 @@ function FullCalendarView({
       </span>
     );
   };
-
+  let clickTimer = null;
   return (
     <div className={`full-calendar-surface ${currentView === "listWeek" ? "schedule-view-active" : ""}`}>
       <FullCalendar
@@ -115,23 +116,34 @@ function FullCalendarView({
   height="690px"
 
   dateClick={(info) => {
-    const rect = info.dayEl?.getBoundingClientRect();
+  const rect = info.dayEl?.getBoundingClientRect();
 
-    onSlotClick?.({
-      start: info.dateStr,
-      anchorRect: rect
-        ? {
-            top: rect.top,
-            left: rect.left,
-            width: rect.width,
-            height: rect.height,
-          }
-        : null,
-      clientX: info.jsEvent?.clientX,
-      clientY: info.jsEvent?.clientY,
-    });
-  }}
+  const slotData = {
+    start: info.dateStr,
+    anchorRect: rect
+      ? {
+          top: rect.top,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height,
+        }
+      : null,
+    clientX: info.jsEvent?.clientX,
+    clientY: info.jsEvent?.clientY,
+  };
 
+  if (clickTimer) {
+    clearTimeout(clickTimer);
+    clickTimer = null;
+
+    onDoubleSlotClick?.(slotData);
+  } else {
+    clickTimer = setTimeout(() => {
+      clickTimer = null;
+      onSlotClick?.(slotData);
+    }, 250);
+  }
+}}
   slotMinTime="07:00:00"
   slotMaxTime="25:00:00"
   slotDuration="01:00:00"

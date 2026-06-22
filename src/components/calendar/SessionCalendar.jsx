@@ -10,6 +10,7 @@ function SessionCalendar({
   sessions,
   onEventClick,
   onSlotClick,
+  onDoubleSlotClick,
 }) {
   const calendarRef = useRef(null);
   const [filters, setFilters] = useState({
@@ -97,6 +98,7 @@ function SessionCalendar({
   currentView={currentView}
   onEventClick={onEventClick}
   onSlotClick={onSlotClick}
+  onDoubleSlotClick={onDoubleSlotClick}
 />
       </div>
     </div>

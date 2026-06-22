@@ -272,6 +272,15 @@ function SessionPage() {
   setSelectedSlot(slotInfo);
   setQuickPopupOpen(true);
 }}
+onDoubleSlotClick={(slotInfo) => {
+    setEditingSession({
+      start: slotInfo.start,
+      end: slotInfo.start,
+      title: "",
+      extendedProps: {},
+    });
+    setDrawerOpen(true);
+  }}
 />
 )}
 

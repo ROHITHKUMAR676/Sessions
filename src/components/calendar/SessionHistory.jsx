@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { SidePanel } from "@carbon/react";
+
 import {
   ComposedModal,
   ModalHeader,
