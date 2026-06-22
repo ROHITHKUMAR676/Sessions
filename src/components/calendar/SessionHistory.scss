@@ -639,3 +639,23 @@
     width: 100%;
   }
 }
+.sh-guide-toggle.cds--btn {
+  width: 100%;
+  max-width: 100%;
+
+  display: flex;
+  justify-content: flex-start !important;
+  align-items: center;
+  gap: 8px;
+
+  padding-left: 16px;
+  padding-right: 16px;
+
+  text-align: left;
+}
+
+.sh-guide-toggle.cds--btn > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
